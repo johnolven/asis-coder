@@ -2,6 +2,28 @@
 
 Coder es un script de bash que facilita la interacción con modelos de lenguaje largo (LLMs) como ChatGPT y Claude para asistir en tareas de desarrollo. Permite generar contexto de código de tu proyecto y hacer consultas basadas en ese contexto.
 
+## Importante: Tokens de API requeridos
+
+Antes de comenzar a usar Coder, necesitarás obtener tokens de API tanto para ChatGPT (OpenAI) como para Claude (Anthropic). Estos tokens son esenciales para que Coder pueda comunicarse con los modelos de lenguaje.
+
+### Cómo obtener los tokens de API:
+
+1. **Token de ChatGPT (OpenAI)**:
+   - Ve a [https://platform.openai.com/](https://platform.openai.com/)
+   - Inicia sesión o crea una cuenta si aún no tienes una
+   - Ve a la sección "API Keys" en tu panel de control
+   - Haz clic en "Create new secret key"
+   - Copia y guarda el token generado en un lugar seguro
+
+2. **Token de Claude (Anthropic)**:
+   - Ve a [https://www.anthropic.com](https://www.anthropic.com)
+   - Regístrate para obtener acceso a la API de Claude (puede requerir aprobación)
+   - Una vez aprobado, accede a tu panel de control
+   - Busca la sección de "API Keys" o similar
+   - Genera un nuevo token y guárdalo de forma segura
+
+**Nota**: Mantén tus tokens de API en secreto y no los compartas con nadie. Serás responsable de cualquier uso que se haga con ellos.
+
 ## Características
 
 - Soporte para múltiples LLMs (actualmente ChatGPT y Claude)
