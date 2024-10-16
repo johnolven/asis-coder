@@ -1,4 +1,4 @@
-# Coder: Asistente de Desarrollo con LLM
+# Asis-coder: Asistente de Desarrollo con LLM
 
 Coder es un script de bash que facilita la interacción con modelos de lenguaje largo (LLMs) como ChatGPT y Claude para asistir en tareas de desarrollo. Permite generar contexto de código de tu proyecto y hacer consultas basadas en ese contexto.
 
