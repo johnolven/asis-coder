@@ -9,7 +9,7 @@ CONFIG_FILE="$CONFIG_DIR/config.json"
 
 # Variable de depuración y versión
 DEBUG=false
-VERSION="1.0.0"
+VERSION="1.0.1"
 
 # Crear directorios necesarios
 mkdir -p "$CONFIG_DIR"
@@ -460,12 +460,84 @@ modo_interactivo() {
             echo "$prompt_completo"
             echo "DEBUG: Enviando petición al LLM..."
         fi
-        respuesta=$(consultar_llm "$prompt_completo")
+        
+        echo -n "Asistente: Pensando..."
+        
+        # Usar un archivo temporal para almacenar la respuesta
+        temp_file=$(mktemp)
+        
+        # Iniciar la consulta en segundo plano
+        consultar_llm "$prompt_completo" > "$temp_file" &
+        pid=$!
+        
+        last_size=0
+        pensando_mostrado=true
+        respuesta_acumulada=""
+        while kill -0 $pid 2>/dev/null; do
+            current_size=$(wc -c < "$temp_file")
+            if [ "$current_size" -gt "$last_size" ]; then
+                if $pensando_mostrado; then
+                    echo -ne "\r\033[K"  # Borrar la línea actual
+                    echo -n "Asistente: "
+                    pensando_mostrado=false
+                fi
+                nuevo_contenido=$(tail -c +$((last_size + 1)) "$temp_file")
+                respuesta_acumulada+="$nuevo_contenido"
+                
+                # Detectar y formatear código
+                if echo "$respuesta_acumulada" | grep -q '```'; then
+                    IFS='```' read -ra ADDR <<< "$respuesta_acumulada"
+                    for i in "${!ADDR[@]}"; do
+                        if (( i % 2 == 1 )); then
+                            echo -e "\n\033[36m```"  # Cyan
+                            dar_formato_codigo "${ADDR[$i]}"
+                            echo -e "```\033[0m"  # Reset color
+                        else
+                            echo -n "${ADDR[$i]}"
+                        fi
+                    done
+                else
+                    echo -n "$nuevo_contenido"
+                fi
+                
+                last_size=$current_size
+            fi
+            sleep 0.1
+        done
+        
+        # Asegurarse de que se muestre el contenido final
+        if $pensando_mostrado; then
+            echo -ne "\r\033[K"  # Borrar la línea actual
+            echo -n "Asistente: "
+        fi
+        nuevo_contenido=$(tail -c +$((last_size + 1)) "$temp_file")
+        respuesta_acumulada+="$nuevo_contenido"
+        
+        # Formatear el contenido final si es necesario
+        if echo "$respuesta_acumulada" | grep -q '```'; then
+            IFS='```' read -ra ADDR <<< "$respuesta_acumulada"
+            for i in "${!ADDR[@]}"; do
+                if (( i % 2 == 1 )); then
+                    echo -e "\n\033[36m```"  # Cyan
+                    dar_formato_codigo "${ADDR[$i]}"
+                    echo -e "```\033[0m"  # Reset color
+                else
+                    echo -n "${ADDR[$i]}"
+                fi
+            done
+        else
+            echo -n "$nuevo_contenido"
+        fi
+        echo  # Nueva línea después de la respuesta completa
+        
+        respuesta=$(cat "$temp_file")
+        rm "$temp_file"
+        
         if $DEBUG; then
             echo "DEBUG: Respuesta recibida del LLM:"
             echo "$respuesta"
         fi
-        echo "Asistente: $respuesta"
+        
         prompt_completo+="\nAsistente: $respuesta"
 
         # Guardar el historial actualizado
@@ -623,3 +695,4 @@ setup_environment
 
 # Ejecutar la función principal
 main "$@"
+
