@@ -1,6 +1,6 @@
 {
   "name": "@johnolven/asis-coder",
-  "version": "1.4.2",
+  "version": "1.5.0",
   "description": "🤖 Your AI Development Assistant - Modular CLI that connects your code with ChatGPT, Claude, and Gemini",
   "main": "coder.sh",
   "bin": {

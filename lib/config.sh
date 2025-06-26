@@ -115,8 +115,12 @@ select_language() {
 
 # Función para detectar si se está ejecutando con npx
 is_running_with_npx() {
-    # Siempre devolver false para mostrar comandos cortos
-    return 1
+    # Verificar si el comando 'coder' está disponible globalmente
+    if command -v coder >/dev/null 2>&1; then
+        return 1  # coder está instalado globalmente
+    else
+        return 0  # probablemente ejecutándose con npx
+    fi
 }
 
 # Función para obtener el comando base correcto

@@ -278,6 +278,55 @@ dar_formato_codigo() {
     fi
 }
 
+# Función para ofrecer instalación global
+ofrecer_instalacion_global() {
+    if is_running_with_npx; then
+        local BLUE='\033[0;34m'
+        local GREEN='\033[0;32m'
+        local YELLOW='\033[1;33m'
+        local CYAN='\033[0;36m'
+        local BOLD='\033[1m'
+        local DIM='\033[2m'
+        local NC='\033[0m'
+        
+        echo ""
+        echo -e "${YELLOW}${BOLD}🚀 Instalación Global Disponible${NC}"
+        echo -e "${DIM}────────────────────────────────────────────────────────────────${NC}"
+        echo -e "Actualmente estás usando ${CYAN}npx${NC} para ejecutar asis-coder."
+        echo -e "¿Te gustaría instalarlo globalmente para usar comandos más cortos?"
+        echo ""
+        echo -e "${GREEN}Con instalación global podrás usar:${NC}"
+        echo -e "   ${CYAN}coder setup${NC}      en lugar de  ${DIM}npx @johnolven/asis-coder setup${NC}"
+        echo -e "   ${CYAN}coder -i${NC}         en lugar de  ${DIM}npx @johnolven/asis-coder -i${NC}"
+        echo -e "   ${CYAN}coder \"pregunta\"${NC} en lugar de  ${DIM}npx @johnolven/asis-coder \"pregunta\"${NC}"
+        echo ""
+        echo -e "¿Quieres instalar asis-coder globalmente? (y/n)"
+        read -p "$(echo -e "${CYAN}> ${NC}")" install_choice
+        
+        if [[ "$install_choice" == "y" || "$install_choice" == "Y" ]]; then
+            echo ""
+            echo -e "${YELLOW}📦 Instalando globalmente...${NC}"
+            if npm install -g @johnolven/asis-coder; then
+                echo -e "${GREEN}✅ ¡Asis-coder instalado globalmente exitosamente!${NC}"
+                echo ""
+                echo -e "${BLUE}${BOLD}🎉 Ahora puedes usar comandos cortos:${NC}"
+                echo -e "   ${CYAN}coder setup${NC}"
+                echo -e "   ${CYAN}coder -i${NC}"
+                echo -e "   ${CYAN}coder \"tu pregunta\"${NC}"
+                echo ""
+                echo -e "${DIM}Presiona Enter para continuar con la configuración...${NC}"
+                read
+            else
+                echo -e "${YELLOW}⚠️ No se pudo instalar globalmente. Continuando con npx...${NC}"
+                echo ""
+            fi
+        else
+            echo -e "${BLUE}💡 Está bien, puedes seguir usando npx cuando quieras.${NC}"
+            echo ""
+        fi
+    fi
+}
+
 # Función para configuración inicial completa
 configuracion_inicial_completa() {
     mostrar_ui_bienvenida
@@ -297,6 +346,9 @@ configuracion_inicial_completa() {
     echo -e "${BLUE}${BOLD}🔧 Configuración Inicial de Asis-coder${NC}"
     echo -e "${DIM}═══════════════════════════════════════════════════════════════${NC}"
     echo ""
+    
+    # Ofrecer instalación global si se está ejecutando con npx
+    ofrecer_instalacion_global
     
     # Verificar dependencias
     echo -e "${YELLOW}📋 Paso 1: Verificando dependencias...${NC}"
