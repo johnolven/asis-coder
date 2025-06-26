@@ -1,0 +1,37 @@
+# Archivos de desarrollo
+.git/
+.gitignore
+.DS_Store
+*.log
+node_modules/
+
+# Archivos temporales
+*.tmp
+*.temp
+/tmp/
+
+# Archivos de configuración local
+.env
+.env.local
+.env.*.local
+
+# Archivos de IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Archivos de test
+test/
+tests/
+*.test.js
+*.spec.js
+
+# Documentación de desarrollo
+CONTRIBUTING.md
+CODE_OF_CONDUCT.md
+SECURITY.md
+
+# Contexto de proyectos (específico del usuario)
+contexto_codigo.txt
+CODER.md 

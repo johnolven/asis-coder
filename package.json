@@ -1,0 +1,71 @@
+{
+  "name": "@johnolven/asis-coder",
+  "version": "1.1.3",
+  "description": "🤖 Your AI Development Assistant - Modular CLI that connects your code with ChatGPT, Claude, and Gemini",
+  "main": "coder.sh",
+  "bin": {
+    "asis-coder": "coder.sh",
+    "coder": "coder.sh"
+  },
+  "scripts": {
+    "postinstall": "node npm-install.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "./coder.sh"
+  },
+  "keywords": [
+    "ai",
+    "assistant",
+    "cli",
+    "chatgpt",
+    "claude",
+    "gemini",
+    "development",
+    "coding",
+    "programming",
+    "openai",
+    "anthropic",
+    "google",
+    "llm",
+    "bash",
+    "shell",
+    "terminal",
+    "developer-tools",
+    "code-assistant",
+    "productivity"
+  ],
+  "author": {
+    "name": "JohnOlven",
+    "email": "johnolvencom@gmail.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/johnolven/asis-coder.git"
+  },
+  "bugs": {
+    "url": "https://github.com/johnolven/asis-coder/issues"
+  },
+  "homepage": "https://github.com/johnolven/asis-coder#readme",
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "os": [
+    "darwin",
+    "linux"
+  ],
+  "preferGlobal": true,
+  "files": [
+    "coder.sh",
+    "lib/",
+    "install.sh",
+    "npm-install.js",
+    "README.MD",
+    "LICENSE"
+  ],
+  "dependencies": {},
+  "devDependencies": {},
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/johnolven"
+  }
+} 

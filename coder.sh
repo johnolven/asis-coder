@@ -7,14 +7,36 @@
 # Autor: Tu Nombre
 # Versión: 1.0.1
 
-# Obtener el directorio del script (resolviendo enlaces simbólicos)
+# Obtener el directorio del script (resolviendo enlaces simbólicos y npm)
 SCRIPT_PATH="${BASH_SOURCE[0]}"
+
 # Resolver enlace simbólico si existe
 if [ -L "$SCRIPT_PATH" ]; then
     SCRIPT_PATH="$(readlink "$SCRIPT_PATH")"
 fi
+
+# Obtener directorio del script
 SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
-LIB_DIR="$SCRIPT_DIR/lib"
+
+# Buscar el directorio lib (para instalación local y npm)
+if [ -d "$SCRIPT_DIR/lib" ]; then
+    # Instalación local o git clone
+    LIB_DIR="$SCRIPT_DIR/lib"
+elif [ -d "$SCRIPT_DIR/../lib/node_modules/@johnolven/asis-coder/lib" ]; then
+    # Instalación global npm
+    LIB_DIR="$SCRIPT_DIR/../lib/node_modules/@johnolven/asis-coder/lib"
+elif [ -d "$(dirname "$SCRIPT_DIR")/lib" ]; then
+    # Instalación npm en directorio padre
+    LIB_DIR="$(dirname "$SCRIPT_DIR")/lib"
+else
+    # Buscar en node_modules
+    NPM_DIR="$(npm root -g 2>/dev/null)/@johnolven/asis-coder/lib"
+    if [ -d "$NPM_DIR" ]; then
+        LIB_DIR="$NPM_DIR"
+    else
+        LIB_DIR="$SCRIPT_DIR/lib"
+    fi
+fi
 
 # Verificar que el directorio lib existe
 if [ ! -d "$LIB_DIR" ]; then

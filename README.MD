@@ -1,227 +1,202 @@
-# 🤖 Asis-coder: Tu Asistente de Desarrollo IA
+# 🤖 Asis-coder
 
-Un potente CLI modular que conecta tu código con modelos de IA como ChatGPT, Claude y Gemini para acelerar tu desarrollo.
+**Your AI Development Assistant** - A modular CLI that connects your code with ChatGPT, Claude, and Gemini for enhanced development workflow.
 
-## ⚡ Instalación Rápida
+[![npm version](https://badge.fury.io/js/@johnolven%2Fasis-coder.svg)](https://badge.fury.io/js/@johnolven%2Fasis-coder)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-### Un solo comando:
+## ✨ Features
+
+- 🧠 **Multi-LLM Support**: ChatGPT, Claude, and Gemini integration
+- 📁 **Smart Project Detection**: Automatically detects your project type and context
+- 💬 **Interactive Mode**: Real-time streaming conversations with AI
+- 🔧 **Modular Architecture**: Clean, maintainable codebase with specialized modules
+- 🌐 **Cross-Platform**: Works on macOS, Linux, and Windows
+- ⚡ **Context Generation**: Automatically includes relevant project files
+- 🎯 **30+ AI Models**: Support for latest models from all providers
+
+## ⚡ Quick Installation
+
+### 🚀 With NPX (Recommended):
 ```bash
-curl -fsSL https://raw.githubusercontent.com/tu-usuario/asis-coder/main/install.sh | bash
+npx @johnolven/asis-coder setup
 ```
 
-### O clona y ejecuta:
+### 📦 Global Installation with NPM:
 ```bash
-git clone https://github.com/tu-usuario/asis-coder.git
-cd asis-coder
-./install.sh
+npm install -g @johnolven/asis-coder
+coder setup
 ```
 
-## 🚀 Inicio Rápido
+## 🖥️ Platform Compatibility
 
-1. **Configuración inicial:**
+### ✅ **macOS and Linux**
+Full automatic installation. The `coder` command will be available globally.
+
+### ⚠️ **Windows**
+Requires one of these environments:
+- **Git Bash** (included with Git for Windows) - ⭐ Recommended
+- **WSL** (Windows Subsystem for Linux)
+- **PowerShell** with bash available
+
+**On Windows use:**
+```bash
+npx @johnolven/asis-coder setup    # Initial configuration
+npx @johnolven/asis-coder -i       # Interactive mode
+npx @johnolven/asis-coder "question"  # Direct query
+```
+
+## 🚀 Quick Start
+
+1. **Initial Setup**:
    ```bash
-   coder setup
+   coder setup  # Configure your API keys
    ```
 
-2. **Inicializa tu proyecto:**
+2. **Generate Project Context**:
    ```bash
-   cd tu-proyecto
-   coder /init
+   coder -context  # Analyze your project
    ```
 
-3. **¡Comienza a preguntar!**
+3. **Ask Questions**:
    ```bash
-   coder "explica este proyecto"
-   coder -i  # modo interactivo
+   coder "explain this project structure"
+   coder "how can I optimize this code?"
    ```
 
-## ✨ Características
+4. **Interactive Mode**:
+   ```bash
+   coder -i  # Start interactive session
+   ```
 
-### 🏗️ **Arquitectura Modular**
-- Código organizado en módulos especializados
-- Fácil mantenimiento y extensión
-- Desarrollo colaborativo optimizado
-- Testing individual por módulo
+## 🧠 Supported AI Models
 
-### 🔍 **Detección Automática de Proyectos**
-- React, Vue, Angular, Node.js
-- Python (Flask, Django), Ruby on Rails
-- Java (Spring Boot), PHP (Laravel)
-- Flutter, y más...
+### ChatGPT (OpenAI) - 14 Models
+- GPT-4o, GPT-4o-mini
+- GPT-4 Turbo, GPT-4
+- GPT-3.5 Turbo variants
+- And more...
 
-### 🤖 **Múltiples Modelos IA (30 modelos)**
-- **ChatGPT**: gpt-4o, gpt-4-turbo, gpt-3.5-turbo, y más
-- **Claude**: claude-3.5-sonnet, claude-3-opus, claude-3-haiku
-- **Gemini**: gemini-1.5-pro, gemini-1.5-flash, gemini-pro
+### Claude (Anthropic) - 8 Models
+- Claude 3.5 Sonnet
+- Claude 3 Opus, Sonnet, Haiku
+- Claude 2.1, 2.0
+- Claude Instant variants
 
-### 💬 **Modo Interactivo Avanzado**
-- Chat continuo con contexto
-- Historial de conversaciones
-- Formateo de código con colores
-- Respuestas en tiempo real
+### Gemini (Google) - 8 Models
+- Gemini 1.5 Pro, Flash
+- Gemini 1.0 Pro variants
+- Gemini Pro Vision
+- And more...
 
-### 🛠️ **Comandos Útiles**
-
-| Comando | Descripción |
-|---------|-------------|
-| `coder setup` | Configuración inicial completa |
-| `coder /init` | Inicializar proyecto (genera CODER.md) |
-| `coder -contexto` | Generar/actualizar contexto |
-| `coder -i` | Modo chat interactivo |
-| `coder -llm` | Cambiar modelo IA |
-| `coder "pregunta"` | Consulta directa |
-
-## 🎯 Ejemplos de Uso
-
-### Análisis de Código
-```bash
-coder "¿qué hace esta función y cómo puedo optimizarla?"
-coder "encuentra bugs potenciales en mi código"
-coder "explica la arquitectura de este proyecto"
-```
-
-### Generación de Código
-```bash
-coder "crea tests unitarios para el módulo de autenticación"
-coder "genera documentación API para mis endpoints"
-coder "refactoriza este código para usar async/await"
-```
-
-### Debugging
-```bash
-coder "por qué falla este test?"
-coder "cómo puedo mejorar el rendimiento de esta consulta?"
-coder "sugiere mejores prácticas para este componente"
-```
-
-## 🔧 Configuración Avanzada
-
-### Variables de Entorno
-```bash
-export CODER_DEFAULT_LLM="chatgpt"
-export CODER_DEFAULT_MODEL="gpt-4o-mini"
-export CODER_DEBUG="true"
-```
-
-### Archivos de Configuración
-- **Config**: `~/.config/coder-cli/config.json`
-- **Logs**: `~/.config/coder-cli/coder.log`
-- **Historial**: `~/.config/coder-cli/historial_chat*.txt`
-
-## 🚨 Importante: API Keys
-
-Necesitarás obtener tokens de API:
-
-### ChatGPT (OpenAI)
-1. Ve a [platform.openai.com](https://platform.openai.com/)
-2. Crea una cuenta y ve a "API Keys"
-3. Genera un nuevo token
-
-### Claude (Anthropic)
-1. Ve a [console.anthropic.com](https://console.anthropic.com/)
-2. Regístrate y obtén acceso a la API
-3. Genera tu token en el dashboard
-
-### Gemini (Google)
-1. Ve a [makersuite.google.com](https://makersuite.google.com/)
-2. Obtén tu API key gratuita
-3. Configúrala en el setup inicial
-
-## 🛡️ Seguridad
-
-- ✅ Tokens encriptados localmente
-- ✅ Conexión directa a APIs (sin servidores intermedios)
-- ✅ Tu código permanece en tu máquina
-- ✅ Logs locales para debugging
-
-## 🤝 Comparación con Otras Herramientas
-
-| Característica | Asis-coder | Claude Code | GitHub Copilot |
-|----------------|------------|-------------|----------------|
-| CLI nativo | ✅ | ✅ | ❌ |
-| Múltiples LLMs | ✅ | ❌ | ❌ |
-| Detección automática | ✅ | ✅ | ❌ |
-| Modo interactivo | ✅ | ✅ | ❌ |
-| Gratuito | ✅ | ❌ | ❌ |
-| Historial local | ✅ | ✅ | ❌ |
-
-## 📊 Casos de Uso
-
-### Para Desarrolladores Individuales
-- Debugging rápido
-- Generación de documentación
-- Aprendizaje de nuevas tecnologías
-
-### Para Equipos
-- Code reviews automatizados
-- Estándares de código consistentes
-- Onboarding de nuevos desarrolladores
-
-### Para Proyectos Open Source
-- Documentación automática
-- Análisis de contribuciones
-- Mejoras de código sugeridas
-
-## 🐛 Troubleshooting
-
-### Problemas Comunes
-
-**Error de permisos:**
-```bash
-chmod +x ~/.local/bin/coder
-```
-
-**PATH no actualizado:**
-```bash
-source ~/.bashrc  # o ~/.zshrc
-```
-
-**Dependencias faltantes:**
-```bash
-# Ubuntu/Debian
-sudo apt install curl jq
-
-# macOS
-brew install curl jq
-```
-
-## 🔄 Actualizaciones
+## 📋 Available Commands
 
 ```bash
-cd asis-coder
-git pull
-./install.sh
+# Configuration
+coder setup                    # Initial setup wizard
+coder -token                   # Update API tokens
+coder -model                   # Change AI model
+coder -llm                     # Switch LLM provider
+
+# Project Analysis
+coder -context                 # Generate project context
+coder -project                 # Detect project type
+
+# Interaction
+coder "your question"          # Direct query
+coder -i                       # Interactive mode
+coder -history                 # View conversation history
+
+# Utilities
+coder -test                    # Test API configuration
+coder -clean                   # Clear conversation history
+coder -help                    # Show help
 ```
 
-## 📝 Changelog
+## 🌟 Usage Examples
 
-### v1.1.0
-- ✨ Detección automática de proyectos
-- ✨ Comando `/init` para inicialización
-- ✨ Soporte para más modelos GPT-4
-- 🐛 Mejoras en estabilidad
+### Basic Query
+```bash
+coder "What's the best way to optimize this React component?"
+```
 
-### v1.0.1
-- 🎨 Interfaz mejorada
-- 📊 Sistema de logs
-- 🔧 Configuración simplificada
+### Project Analysis
+```bash
+coder -context
+coder "Analyze the architecture of this project and suggest improvements"
+```
 
-## 🤝 Contribuir
+### Interactive Development Session
+```bash
+coder -i
+# Start a conversation about your code
+# Get real-time suggestions and explanations
+```
 
-1. Fork el proyecto
-2. Crea una rama: `git checkout -b feature/nueva-caracteristica`
-3. Commit: `git commit -m 'Agregar nueva característica'`
-4. Push: `git push origin feature/nueva-caracteristica`
-5. Abre un Pull Request
+### Switch Between Models
+```bash
+coder -model  # Choose from 30+ available models
+coder -llm    # Switch between ChatGPT, Claude, Gemini
+```
 
-## 📄 Licencia
+## 🏗️ Architecture
 
-MIT License - ver [LICENSE](LICENSE) para más detalles.
+Asis-coder features a modular architecture with specialized components:
 
-## ⭐ Si te gusta el proyecto
+- **`lib/config.sh`**: System configuration and environment setup
+- **`lib/api_validation.sh`**: API key validation and testing
+- **`lib/llm_models.sh`**: LLM provider and model management
+- **`lib/project_manager.sh`**: Project detection and context generation
+- **`lib/ui_interface.sh`**: User interface and guided configuration
+- **`lib/llm_communication.sh`**: AI communication and streaming
 
-¡Dale una estrella en GitHub! Ayuda a otros desarrolladores a encontrar esta herramienta.
+## 📁 Project Detection
+
+Automatically detects and optimizes for:
+
+- **Web**: React, Vue, Angular, HTML/CSS/JS
+- **Backend**: Node.js, Python, PHP, Ruby
+- **Mobile**: React Native, Flutter
+- **Desktop**: Electron, .NET
+- **Data**: Jupyter, R, MATLAB
+- **DevOps**: Docker, Kubernetes, CI/CD
+- **And many more...**
+
+## 🔧 Configuration
+
+### API Keys Setup
+The setup wizard will guide you through configuring:
+
+1. **OpenAI API Key** (for ChatGPT)
+2. **Anthropic API Key** (for Claude)  
+3. **Google AI API Key** (for Gemini)
+
+### Environment Variables
+You can also set environment variables:
+```bash
+export OPENAI_API_KEY="your-key"
+export ANTHROPIC_API_KEY="your-key"
+export GOOGLE_AI_API_KEY="your-key"
+```
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🔗 Links
+
+- [npm Package](https://www.npmjs.com/package/@johnolven/asis-coder)
+- [GitHub Repository](https://github.com/johnolven/asis-coder)
+- [Issues & Support](https://github.com/johnolven/asis-coder/issues)
+
+## 🙏 Acknowledgments
+
+Built with ❤️ for developers who want to enhance their coding workflow with AI assistance.
 
 ---
 
-**¿Necesitas ayuda?** Abre un [issue](https://github.com/tu-usuario/asis-coder/issues) o únete a nuestras [discusiones](https://github.com/tu-usuario/asis-coder/discussions).
+**Made with 🤖 AI assistance** - Asis-coder is itself built using AI-powered development!
