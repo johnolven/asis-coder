@@ -1,6 +1,6 @@
 # 🤖 Asis-coder: Tu Asistente de Desarrollo IA
 
-Un potente CLI que conecta tu código con modelos de IA como ChatGPT y Claude para acelerar tu desarrollo.
+Un potente CLI modular que conecta tu código con modelos de IA como ChatGPT, Claude y Gemini para acelerar tu desarrollo.
 
 ## ⚡ Instalación Rápida
 
@@ -37,15 +37,22 @@ cd asis-coder
 
 ## ✨ Características
 
+### 🏗️ **Arquitectura Modular**
+- Código organizado en módulos especializados
+- Fácil mantenimiento y extensión
+- Desarrollo colaborativo optimizado
+- Testing individual por módulo
+
 ### 🔍 **Detección Automática de Proyectos**
 - React, Vue, Angular, Node.js
 - Python (Flask, Django), Ruby on Rails
 - Java (Spring Boot), PHP (Laravel)
 - Flutter, y más...
 
-### 🤖 **Múltiples Modelos IA**
-- **ChatGPT**: gpt-4o, gpt-4-turbo, gpt-3.5-turbo
-- **Claude**: claude-3.5-sonnet, claude-3-opus
+### 🤖 **Múltiples Modelos IA (30 modelos)**
+- **ChatGPT**: gpt-4o, gpt-4-turbo, gpt-3.5-turbo, y más
+- **Claude**: claude-3.5-sonnet, claude-3-opus, claude-3-haiku
+- **Gemini**: gemini-1.5-pro, gemini-1.5-flash, gemini-pro
 
 ### 💬 **Modo Interactivo Avanzado**
 - Chat continuo con contexto
@@ -114,6 +121,11 @@ Necesitarás obtener tokens de API:
 1. Ve a [console.anthropic.com](https://console.anthropic.com/)
 2. Regístrate y obtén acceso a la API
 3. Genera tu token en el dashboard
+
+### Gemini (Google)
+1. Ve a [makersuite.google.com](https://makersuite.google.com/)
+2. Obtén tu API key gratuita
+3. Configúrala en el setup inicial
 
 ## 🛡️ Seguridad
 
