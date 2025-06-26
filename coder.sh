@@ -26,14 +26,15 @@ if [ -d "$SCRIPT_DIR/lib" ]; then
     # Instalación local o git clone
     LIB_DIR="$SCRIPT_DIR/lib"
 else
-    # Para npx e instalaciones npm, buscar en múltiples ubicaciones
+    # Para instalaciones npm, el script puede estar en bin/ y lib/ en ../lib/
+    # o en node_modules/@johnolven/asis-coder/lib
     POSSIBLE_PATHS=(
-        "$(npm root -g 2>/dev/null)/@johnolven/asis-coder/lib"
-        "$(npm root 2>/dev/null)/@johnolven/asis-coder/lib"
-        "$HOME/.npm/_npx/*/node_modules/@johnolven/asis-coder/lib"
-        "/tmp/_npx/*/node_modules/@johnolven/asis-coder/lib"
-        "$SCRIPT_DIR/../lib"
-        "$(dirname "$SCRIPT_DIR")/lib"
+        "$SCRIPT_DIR/../lib"  # Para instalación global npm
+        "$(dirname "$SCRIPT_DIR")/lib"  # Para instalación global npm (variante)
+        "$(npm root -g 2>/dev/null)/@johnolven/asis-coder/lib"  # Global npm root
+        "$(npm root 2>/dev/null)/@johnolven/asis-coder/lib"  # Local npm root
+        "$HOME/.npm/_npx/*/node_modules/@johnolven/asis-coder/lib"  # npx cache
+        "/tmp/_npx/*/node_modules/@johnolven/asis-coder/lib"  # npx temp
     )
     
     LIB_DIR=""
@@ -52,9 +53,17 @@ else
         fi
     done
     
-    # Si no se encontró, usar directorio por defecto
+    # Si no se encontró, intentar buscar desde el directorio del script
     if [ -z "$LIB_DIR" ]; then
-        LIB_DIR="$SCRIPT_DIR/lib"
+        # Para instalaciones npm, a veces el script está en un subdirectorio
+        PARENT_DIR="$(dirname "$SCRIPT_DIR")"
+        if [ -d "$PARENT_DIR/lib" ]; then
+            LIB_DIR="$PARENT_DIR/lib"
+        elif [ -d "$PARENT_DIR/@johnolven/asis-coder/lib" ]; then
+            LIB_DIR="$PARENT_DIR/@johnolven/asis-coder/lib"
+        else
+            LIB_DIR="$SCRIPT_DIR/lib"
+        fi
     fi
 fi
 
