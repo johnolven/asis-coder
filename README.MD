@@ -15,17 +15,31 @@
 - ⚡ **Context Generation**: Automatically includes relevant project files
 - 🎯 **30+ AI Models**: Support for latest models from all providers
 
-## ⚡ Quick Installation
+## ⚡ Installation Options
 
-### 🚀 With NPX (Recommended):
+### 🚀 Option 1: NPX (Recommended)
 ```bash
+# Run directly without installing anything
 npx @johnolven/asis-coder setup
+
 ```
 
-### 📦 Global Installation with NPM:
+### 📦 Option 2: Global Installation
 ```bash
+# Install globally to use 'coder' command everywhere
 npm install -g @johnolven/asis-coder
+
+# Then use short commands:
 coder setup
+coder -i
+coder "explain this project"
+```
+
+### ⚠️ Option 3: Local Installation (Not recommended)
+```bash
+# Local install still requires npx to run
+npm install @johnolven/asis-coder
+npx @johnolven/asis-coder setup  # Still need npx!
 ```
 
 ## 🖥️ Platform Compatibility
@@ -48,25 +62,53 @@ npx @johnolven/asis-coder "question"  # Direct query
 
 ## 🚀 Quick Start
 
-1. **Initial Setup**:
+### With Global Installation:
+1. **Install globally**:
+   ```bash
+   npm install -g @johnolven/asis-coder
+   ```
+
+2. **Initial Setup**:
    ```bash
    coder setup  # Configure your API keys
    ```
 
-2. **Generate Project Context**:
+3. **Generate Project Context**:
    ```bash
    coder -context  # Analyze your project
    ```
 
-3. **Ask Questions**:
+4. **Ask Questions**:
    ```bash
    coder "explain this project structure"
    coder "how can I optimize this code?"
    ```
 
-4. **Interactive Mode**:
+5. **Interactive Mode**:
    ```bash
    coder -i  # Start interactive session
+   ```
+
+### With NPX (no installation):
+1. **Initial Setup**:
+   ```bash
+   npx @johnolven/asis-coder setup  # Configure your API keys
+   ```
+
+2. **Generate Project Context**:
+   ```bash
+   npx @johnolven/asis-coder -context  # Analyze your project
+   ```
+
+3. **Ask Questions**:
+   ```bash
+   npx @johnolven/asis-coder "explain this project structure"
+   npx @johnolven/asis-coder "how can I optimize this code?"
+   ```
+
+4. **Interactive Mode**:
+   ```bash
+   npx @johnolven/asis-coder -i  # Start interactive session
    ```
 
 ## 🧠 Supported AI Models
@@ -91,6 +133,7 @@ npx @johnolven/asis-coder "question"  # Direct query
 
 ## 📋 Available Commands
 
+### If installed globally (`npm install -g @johnolven/asis-coder`):
 ```bash
 # Configuration
 coder setup                    # Initial setup wizard
@@ -113,30 +156,81 @@ coder -clean                   # Clear conversation history
 coder -help                    # Show help
 ```
 
+### If using npx (no installation):
+```bash
+# Configuration
+npx @johnolven/asis-coder setup                    # Initial setup wizard
+npx @johnolven/asis-coder -token                   # Update API tokens
+npx @johnolven/asis-coder -model                   # Change AI model
+npx @johnolven/asis-coder -llm                     # Switch LLM provider
+
+# Project Analysis
+npx @johnolven/asis-coder -context                 # Generate project context
+npx @johnolven/asis-coder -project                 # Detect project type
+
+# Interaction
+npx @johnolven/asis-coder "your question"          # Direct query
+npx @johnolven/asis-coder -i                       # Interactive mode
+npx @johnolven/asis-coder -history                 # View conversation history
+
+# Utilities
+npx @johnolven/asis-coder -test                    # Test API configuration
+npx @johnolven/asis-coder -clean                   # Clear conversation history
+npx @johnolven/asis-coder -help                    # Show help
+```
+
 ## 🌟 Usage Examples
 
-### Basic Query
+### With Global Installation (`npm install -g @johnolven/asis-coder`):
+
+#### Basic Query
 ```bash
 coder "What's the best way to optimize this React component?"
 ```
 
-### Project Analysis
+#### Project Analysis
 ```bash
 coder -context
 coder "Analyze the architecture of this project and suggest improvements"
 ```
 
-### Interactive Development Session
+#### Interactive Development Session
 ```bash
 coder -i
 # Start a conversation about your code
 # Get real-time suggestions and explanations
 ```
 
-### Switch Between Models
+#### Switch Between Models
 ```bash
 coder -model  # Choose from 30+ available models
 coder -llm    # Switch between ChatGPT, Claude, Gemini
+```
+
+### With NPX (no installation needed):
+
+#### Basic Query
+```bash
+npx @johnolven/asis-coder "What's the best way to optimize this React component?"
+```
+
+#### Project Analysis
+```bash
+npx @johnolven/asis-coder -context
+npx @johnolven/asis-coder "Analyze the architecture of this project and suggest improvements"
+```
+
+#### Interactive Development Session
+```bash
+npx @johnolven/asis-coder -i
+# Start a conversation about your code
+# Get real-time suggestions and explanations
+```
+
+#### Switch Between Models
+```bash
+npx @johnolven/asis-coder -model  # Choose from 30+ available models
+npx @johnolven/asis-coder -llm    # Switch between ChatGPT, Claude, Gemini
 ```
 
 ## 🏗️ Architecture

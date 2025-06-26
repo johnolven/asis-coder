@@ -7,6 +7,9 @@
 # Autor: Tu Nombre
 # Versión: 1.0.1
 
+# Variables iniciales
+DEBUG=false
+
 # Obtener el directorio del script (resolviendo enlaces simbólicos y npm)
 SCRIPT_PATH="${BASH_SOURCE[0]}"
 
@@ -18,22 +21,39 @@ fi
 # Obtener directorio del script
 SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
 
-# Buscar el directorio lib (para instalación local y npm)
+# Buscar el directorio lib (para instalación local, npm global y npx)
 if [ -d "$SCRIPT_DIR/lib" ]; then
     # Instalación local o git clone
     LIB_DIR="$SCRIPT_DIR/lib"
-elif [ -d "$SCRIPT_DIR/../lib/node_modules/@johnolven/asis-coder/lib" ]; then
-    # Instalación global npm
-    LIB_DIR="$SCRIPT_DIR/../lib/node_modules/@johnolven/asis-coder/lib"
-elif [ -d "$(dirname "$SCRIPT_DIR")/lib" ]; then
-    # Instalación npm en directorio padre
-    LIB_DIR="$(dirname "$SCRIPT_DIR")/lib"
 else
-    # Buscar en node_modules
-    NPM_DIR="$(npm root -g 2>/dev/null)/@johnolven/asis-coder/lib"
-    if [ -d "$NPM_DIR" ]; then
-        LIB_DIR="$NPM_DIR"
-    else
+    # Para npx e instalaciones npm, buscar en múltiples ubicaciones
+    POSSIBLE_PATHS=(
+        "$(npm root -g 2>/dev/null)/@johnolven/asis-coder/lib"
+        "$(npm root 2>/dev/null)/@johnolven/asis-coder/lib"
+        "$HOME/.npm/_npx/*/node_modules/@johnolven/asis-coder/lib"
+        "/tmp/_npx/*/node_modules/@johnolven/asis-coder/lib"
+        "$SCRIPT_DIR/../lib"
+        "$(dirname "$SCRIPT_DIR")/lib"
+    )
+    
+    LIB_DIR=""
+    for path in "${POSSIBLE_PATHS[@]}"; do
+        # Expandir wildcards si existen
+        if [[ "$path" == *"*"* ]]; then
+            for expanded_path in $path; do
+                if [ -d "$expanded_path" ]; then
+                    LIB_DIR="$expanded_path"
+                    break 2
+                fi
+            done
+        elif [ -d "$path" ]; then
+            LIB_DIR="$path"
+            break
+        fi
+    done
+    
+    # Si no se encontró, usar directorio por defecto
+    if [ -z "$LIB_DIR" ]; then
         LIB_DIR="$SCRIPT_DIR/lib"
     fi
 fi
@@ -46,16 +66,21 @@ if [ ! -d "$LIB_DIR" ]; then
 fi
 
 # Importar todos los módulos
-echo "🔄 Cargando módulos..."
+if $DEBUG; then
+    echo "🔄 Cargando módulos..."
+fi
 
 # Módulo de configuración (debe ser el primero)
 if [ -f "$LIB_DIR/config.sh" ]; then
     source "$LIB_DIR/config.sh"
-    echo "✅ Módulo de configuración cargado"
+    if $DEBUG; then echo "✅ Módulo de configuración cargado"; fi
 else
-    echo "❌ Error: No se encontró config.sh"
+    echo "❌ Error: No se encontró config.sh en $LIB_DIR"
     exit 1
 fi
+
+# Pasar información de npx al módulo de configuración
+export ASIS_SCRIPT_PATH="$SCRIPT_PATH"
 
 # Inicializar directorios de configuración
 init_config_directories
@@ -63,50 +88,52 @@ init_config_directories
 # Módulo de validación de APIs
 if [ -f "$LIB_DIR/api_validation.sh" ]; then
     source "$LIB_DIR/api_validation.sh"
-    echo "✅ Módulo de validación de APIs cargado"
+    if $DEBUG; then echo "✅ Módulo de validación de APIs cargado"; fi
 else
-    echo "❌ Error: No se encontró api_validation.sh"
+    echo "❌ Error: No se encontró api_validation.sh en $LIB_DIR"
     exit 1
 fi
 
 # Módulo de gestión de LLMs
 if [ -f "$LIB_DIR/llm_models.sh" ]; then
     source "$LIB_DIR/llm_models.sh"
-    echo "✅ Módulo de gestión de LLMs cargado"
+    if $DEBUG; then echo "✅ Módulo de gestión de LLMs cargado"; fi
 else
-    echo "❌ Error: No se encontró llm_models.sh"
+    echo "❌ Error: No se encontró llm_models.sh en $LIB_DIR"
     exit 1
 fi
 
 # Módulo de gestión de proyectos
 if [ -f "$LIB_DIR/project_manager.sh" ]; then
     source "$LIB_DIR/project_manager.sh"
-    echo "✅ Módulo de gestión de proyectos cargado"
+    if $DEBUG; then echo "✅ Módulo de gestión de proyectos cargado"; fi
 else
-    echo "❌ Error: No se encontró project_manager.sh"
+    echo "❌ Error: No se encontró project_manager.sh en $LIB_DIR"
     exit 1
 fi
 
 # Módulo de interfaz de usuario
 if [ -f "$LIB_DIR/ui_interface.sh" ]; then
     source "$LIB_DIR/ui_interface.sh"
-    echo "✅ Módulo de interfaz de usuario cargado"
+    if $DEBUG; then echo "✅ Módulo de interfaz de usuario cargado"; fi
 else
-    echo "❌ Error: No se encontró ui_interface.sh"
+    echo "❌ Error: No se encontró ui_interface.sh en $LIB_DIR"
     exit 1
 fi
 
 # Módulo de comunicación con LLMs
 if [ -f "$LIB_DIR/llm_communication.sh" ]; then
     source "$LIB_DIR/llm_communication.sh"
-    echo "✅ Módulo de comunicación con LLMs cargado"
+    if $DEBUG; then echo "✅ Módulo de comunicación con LLMs cargado"; fi
 else
-    echo "❌ Error: No se encontró llm_communication.sh"
+    echo "❌ Error: No se encontró llm_communication.sh en $LIB_DIR"
     exit 1
 fi
 
-echo "🎉 Todos los módulos cargados exitosamente"
-echo ""
+if $DEBUG; then
+    echo "🎉 Todos los módulos cargados exitosamente"
+    echo ""
+fi
 
 # Función principal
 main() {
@@ -161,7 +188,16 @@ main() {
         "-test"|"test")
             probar_configuracion_api
             ;;
+        "-lang"|"--lang"|"-language"|"--language")
+            # Cargar idioma primero
+            load_language
+            select_language
+            ;;
         "")
+            # Verificar si es primera vez (no hay idioma configurado)
+            if [ ! -f "$LANG_FILE" ]; then
+                select_language
+            fi
             validar_y_mostrar_ui
             ;;
         *)

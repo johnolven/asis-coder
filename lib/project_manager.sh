@@ -10,27 +10,30 @@
 detectar_tipo_proyecto() {
     local directorio_actual=$(pwd)
     
+    # Cargar idioma
+    load_language
+    
     # React
     if [[ -f "$directorio_actual/package.json" ]]; then
         local package_content=$(cat "$directorio_actual/package.json")
         if echo "$package_content" | grep -q "react"; then
-            echo "🔍 Proyecto React detectado automáticamente"
+            echo "$(get_text "react_detected")"
             tipo_proyecto=1
             return
         elif echo "$package_content" | grep -q "vue"; then
-            echo "🔍 Proyecto Vue.js detectado automáticamente"
+            echo "$(get_text "vue_detected")"
             tipo_proyecto=3
             return
         elif echo "$package_content" | grep -q "angular"; then
-            echo "🔍 Proyecto Angular detectado automáticamente"
+            echo "$(get_text "angular_detected")"
             tipo_proyecto=4
             return
         elif echo "$package_content" | grep -q "express"; then
-            echo "🔍 Proyecto Express.js detectado automáticamente"
+            echo "$(get_text "express_detected")"
             tipo_proyecto=9
             return
         else
-            echo "🔍 Proyecto Node.js detectado automáticamente"
+            echo "$(get_text "node_detected")"
             tipo_proyecto=2
             return
         fi
@@ -38,14 +41,14 @@ detectar_tipo_proyecto() {
     
     # Ruby on Rails
     if [[ -f "$directorio_actual/Gemfile" ]] && grep -q "rails" "$directorio_actual/Gemfile"; then
-        echo "🔍 Proyecto Ruby on Rails detectado automáticamente"
+        echo "$(get_text "rails_detected")"
         tipo_proyecto=5
         return
     fi
     
     # Laravel
     if [[ -f "$directorio_actual/composer.json" ]] && grep -q "laravel" "$directorio_actual/composer.json"; then
-        echo "🔍 Proyecto Laravel detectado automáticamente"
+        echo "$(get_text "laravel_detected")"
         tipo_proyecto=6
         return
     fi
@@ -53,11 +56,11 @@ detectar_tipo_proyecto() {
     # Flask/Django
     if [[ -f "$directorio_actual/requirements.txt" ]]; then
         if grep -q "flask" "$directorio_actual/requirements.txt"; then
-            echo "🔍 Proyecto Flask detectado automáticamente"
+            echo "$(get_text "flask_detected")"
             tipo_proyecto=7
             return
         elif grep -q "django" "$directorio_actual/requirements.txt"; then
-            echo "🔍 Proyecto Django detectado automáticamente"
+            echo "$(get_text "django_detected")"
             tipo_proyecto=7
             return
         fi
@@ -65,14 +68,14 @@ detectar_tipo_proyecto() {
     
     # Spring Boot
     if [[ -f "$directorio_actual/pom.xml" ]] && grep -q "spring-boot" "$directorio_actual/pom.xml"; then
-        echo "🔍 Proyecto Spring Boot detectado automáticamente"
+        echo "$(get_text "spring_detected")"
         tipo_proyecto=8
         return
     fi
     
     # Flutter
     if [[ -f "$directorio_actual/pubspec.yaml" ]] && grep -q "flutter" "$directorio_actual/pubspec.yaml"; then
-        echo "🔍 Proyecto Flutter detectado automáticamente"
+        echo "$(get_text "flutter_detected")"
         tipo_proyecto=10
         return
     fi
@@ -226,7 +229,7 @@ generar_contexto() {
 
     if [ ! -w "$(dirname "$archivo_salida")" ]; then
         log "Error: No se puede escribir en el directorio $(dirname "$archivo_salida")"
-        echo -e "${RED}❌ Error: No se puede escribir en el directorio${NC}"
+        echo -e "${RED}$(get_text "error_write_dir")${NC}"
         exit 1
     fi
 
@@ -398,7 +401,7 @@ $(cat "$archivo_contexto")"
             echo "$guia" > "CODER.md"
             echo "✅ Archivo CODER.md creado con la guía del proyecto."
         else
-            echo "❌ Error al generar la guía del proyecto."
+            echo "$(get_text "error_generate_guide")"
         fi
     else
         echo "❌ No se encontró archivo de contexto. Ejecuta 'coder -contexto' primero."

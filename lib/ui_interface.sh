@@ -20,29 +20,32 @@ mostrar_ui_interactivo() {
     local DIM='\033[2m'
     local NC='\033[0m'
     
+    # Cargar idioma
+    load_language
+    
     # Banner para modo interactivo
     echo -e "${CYAN}${BOLD}"
-    echo "    ✻ ¡Bienvenido al Modo Interactivo de Asis-coder!"
+    echo "    $(get_text "interactive_welcome")"
     echo -e "${NC}"
     echo -e "${DIM}    ────────────────────────────────────────────────────────────────${NC}"
     
     # Información del proyecto
     local proyecto_detectado=$(detectar_proyecto_actual)
     if [ -n "$proyecto_detectado" ]; then
-        echo -e "    ${BLUE}📁 Proyecto:${NC} ${BOLD}$proyecto_detectado${NC}"
+        echo -e "    ${BLUE}📁 $(get_text "project"):${NC} ${BOLD}$proyecto_detectado${NC}"
     fi
     
     # Información del LLM
     if [ -f "$CONFIG_FILE" ]; then
         source "$CONFIG_FILE" 2>/dev/null || true
         if [ -n "$llm_choice" ] && [ -n "$model" ]; then
-            echo -e "    ${PURPLE}🤖 IA:${NC} ${BOLD}$llm_choice${NC} (${DIM}$model${NC})"
+            echo -e "    ${PURPLE}🤖 $(get_text "ai"):${NC} ${BOLD}$llm_choice${NC} (${DIM}$model${NC})"
         fi
     fi
     
     echo ""
-    echo -e "${YELLOW}💬 Escribe tus preguntas y presiona Enter${NC}"
-    echo -e "${DIM}    Comandos: ${BOLD}salir${NC}${DIM}, ${BOLD}exit${NC}${DIM}, ${BOLD}quit${NC}${DIM} para terminar${NC}"
+    echo -e "${YELLOW}$(get_text "write_questions")${NC}"
+    echo -e "${DIM}    $(get_text "exit_commands")${NC}"
     echo -e "${DIM}    ────────────────────────────────────────────────────────────────${NC}"
     echo ""
 }
@@ -65,6 +68,9 @@ mostrar_ui_principal() {
     local DIM='\033[2m'
     local NC='\033[0m'
     
+    # Cargar idioma
+    load_language
+    
     clear
     
     # Banner ASCII
@@ -78,8 +84,8 @@ mostrar_ui_principal() {
     echo "    ║    ██║  ██║███████║██║███████║      ╚██████╗╚██████╔╝██████╔╝███████╗██║  ██║ "
     echo "    ║    ╚═╝  ╚═╝╚══════╝╚═╝╚══════╝       ╚═════╝ ╚═════╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝ "
     echo "    ║                                                               ║"
-    echo "    ║           🤖Tu Asistente de Desarrollo con IA                 ║"
-    echo "    ║                 Powered by @JohnOlven                         ║"
+    echo "    ║           $(get_text "ai_assistant")                 ║"
+    echo "    ║                 $(get_text "powered_by")                         ║"
     echo "    ╚═══════════════════════════════════════════════════════════════╝"
     echo -e "${NC}"
     
@@ -97,52 +103,55 @@ mostrar_ui_principal() {
     local contexto_existe=$(encontrar_archivo_contexto)
     
     # Estado del sistema
-    echo -e "${BLUE}${BOLD}📊 Estado Actual:${NC}"
+    echo -e "${BLUE}${BOLD}$(get_text "current_status"):${NC}"
     echo -e "${DIM}  ────────────────────────────────────────────────────────────────${NC}"
     
     if $configurado; then
-        echo -e "  ${GREEN}✓${NC} Configurado (${BOLD}$llm_choice${NC})"
+        echo -e "  ${GREEN}✓${NC} $(get_text "configured") (${BOLD}$llm_choice${NC})"
     else
-        echo -e "  ${RED}✗${NC} No configurado"
+        echo -e "  ${RED}✗${NC} $(get_text "not_configured")"
     fi
     
     if [ -n "$proyecto_detectado" ]; then
-        echo -e "  ${GREEN}✓${NC} Proyecto: ${BOLD}$proyecto_detectado${NC}"
+        echo -e "  ${GREEN}✓${NC} $(get_text "project"): ${BOLD}$proyecto_detectado${NC}"
     else
-        echo -e "  ${YELLOW}⚠${NC} Proyecto no detectado"
+        echo -e "  ${YELLOW}⚠${NC} $(get_text "project_not_detected")"
     fi
     
     if [ -n "$contexto_existe" ]; then
-        echo -e "  ${GREEN}✓${NC} Contexto disponible"
+        echo -e "  ${GREEN}✓${NC} $(get_text "context_available")"
     else
-        echo -e "  ${YELLOW}⚠${NC} Sin contexto"
+        echo -e "  ${YELLOW}⚠${NC} $(get_text "no_context")"
     fi
     
     echo ""
     
     # Comandos principales
-    echo -e "${PURPLE}${BOLD}🚀 Comandos Principales:${NC}"
+    local cmd_prefix=$(get_command_prefix)
+    
+    echo -e "${PURPLE}${BOLD}$(get_text "main_commands"):${NC}"
     echo -e "${DIM}  ────────────────────────────────────────────────────────────────${NC}"
-    echo -e "  ${CYAN}coder setup${NC}           # Configuración inicial completa"
-    echo -e "  ${CYAN}coder -i${NC}              # Modo chat interactivo"
-    echo -e "  ${CYAN}coder \"pregunta\"${NC}      # Consulta directa"
-    echo -e "  ${CYAN}coder -contexto${NC}       # Generar contexto del proyecto"
-    echo -e "  ${CYAN}coder /init${NC}           # Inicializar proyecto"
-    echo -e "  ${CYAN}coder -llm${NC}            # Cambiar modelo de IA"
-    echo -e "  ${CYAN}coder config${NC}          # Ver/cambiar configuración"
-    echo -e "  ${CYAN}coder test${NC}            # Probar configuración"
+    echo -e "  ${CYAN}${cmd_prefix} setup${NC}           # $(get_text "initial_setup")"
+    echo -e "  ${CYAN}${cmd_prefix} -i${NC}              # $(get_text "interactive_mode")"
+    echo -e "  ${CYAN}${cmd_prefix} \"pregunta\"${NC}      # $(get_text "direct_query")"
+    echo -e "  ${CYAN}${cmd_prefix} -contexto${NC}       # $(get_text "generate_context")"
+    echo -e "  ${CYAN}${cmd_prefix} /init${NC}           # $(get_text "init_project")"
+    echo -e "  ${CYAN}${cmd_prefix} -llm${NC}            # $(get_text "change_ai")"
+    echo -e "  ${CYAN}${cmd_prefix} config${NC}          # $(get_text "view_config")"
+    echo -e "  ${CYAN}${cmd_prefix} test${NC}            # $(get_text "test_config")"
+    echo -e "  ${CYAN}${cmd_prefix} -lang${NC}           # Change language / Cambiar idioma"
     
     echo ""
-    echo -e "${GREEN}${BOLD}💡 Ejemplos de Uso:${NC}"
+    echo -e "${GREEN}${BOLD}$(get_text "usage_examples"):${NC}"
     echo -e "${DIM}  ────────────────────────────────────────────────────────────────${NC}"
-    echo -e '  📝 coder "explica este proyecto"'
-    echo -e '  🔍 coder "encuentra bugs en mi código"'
-    echo -e '  🧪 coder "genera tests para el módulo de auth"'
-    echo -e '  📚 coder "documenta esta función"'
+    echo -e "  📝 ${cmd_prefix} \"$(get_text "explain_project")\""
+    echo -e "  🔍 ${cmd_prefix} \"$(get_text "find_bugs")\""
+    echo -e "  🧪 ${cmd_prefix} \"$(get_text "generate_tests")\""
+    echo -e "  📚 ${cmd_prefix} \"$(get_text "document_function")\""
     
     echo ""
     echo -e "${DIM}  ────────────────────────────────────────────────────────────────${NC}"
-    echo -e "${DIM}    Presiona cualquier tecla para continuar o Ctrl+C para salir${NC}"
+    echo -e "${DIM}    $(get_text "press_key")${NC}"
     echo -e "${DIM}  ────────────────────────────────────────────────────────────────${NC}"
 }
 
@@ -160,15 +169,18 @@ mostrar_ui_bienvenida() {
     
     clear
     
+    # Cargar idioma
+    load_language
+    
     # Banner de bienvenida
     echo -e "${CYAN}${BOLD}"
     echo "    ╔═══════════════════════════════════════════════════════════════╗"
-    echo "    ║                    🎉 ¡BIENVENIDO! 🎉                        ║"
+    echo "    ║                    $(get_text "welcome_title")                        ║"
     echo "    ║                                                               ║"
-    echo "    ║              ASIS-CODER - Configuración Inicial               ║"
+    echo "    ║              $(get_text "welcome_subtitle")               ║"
     echo "    ║                                                               ║"
-    echo "    ║    Tu asistente de desarrollo con IA está listo para          ║"
-    echo "    ║    ayudarte a programar más eficientemente                    ║"
+    echo "    ║    $(get_text "welcome_desc")          ║"
+    echo "    ║                                        ║"
     echo "    ║                                                               ║"
     echo "    ╚═══════════════════════════════════════════════════════════════╝"
     echo -e "${NC}"
@@ -225,28 +237,30 @@ mostrar_ui_bienvenida() {
         echo -e "   ${YELLOW}⚠${NC} Contexto no generado"
     fi
     
+    local cmd_prefix=$(get_command_prefix)
+    
     echo ""
     echo -e "${YELLOW}${BOLD}🚀 Primeros Pasos${NC}"
     echo -e "${DIM}────────────────────────────────────────────────────────────────${NC}"
     
     if [ ! -f "$CONFIG_FILE" ] || [ -z "$llm_choice" ]; then
-        echo -e "   ${BOLD}1.${NC} Configura tu LLM: ${CYAN}coder setup${NC}"
+        echo -e "   ${BOLD}1.${NC} Configura tu LLM: ${CYAN}${cmd_prefix} setup${NC}"
     fi
     
     if [ -z "$contexto_existe" ]; then
-        echo -e "   ${BOLD}2.${NC} Genera contexto: ${CYAN}coder -contexto${NC}"
+        echo -e "   ${BOLD}2.${NC} Genera contexto: ${CYAN}${cmd_prefix} -contexto${NC}"
     fi
     
-    echo -e "   ${BOLD}3.${NC} Inicializa proyecto: ${CYAN}coder /init${NC}"
-    echo -e "   ${BOLD}4.${NC} Modo interactivo: ${CYAN}coder -i${NC}"
+    echo -e "   ${BOLD}3.${NC} Inicializa proyecto: ${CYAN}${cmd_prefix} /init${NC}"
+    echo -e "   ${BOLD}4.${NC} Modo interactivo: ${CYAN}${cmd_prefix} -i${NC}"
     
     echo ""
     echo -e "${GREEN}${BOLD}💡 Ejemplos de Uso${NC}"
     echo -e "${DIM}────────────────────────────────────────────────────────────────${NC}"
-    echo -e '   📝 coder "explica este proyecto"'
-    echo -e '   🔍 coder "encuentra bugs en mi código"'
-    echo -e '   🧪 coder "genera tests para el módulo de auth"'
-    echo -e '   📚 coder "documenta esta función"'
+    echo -e "   📝 ${cmd_prefix} \"explica este proyecto\""
+    echo -e "   🔍 ${cmd_prefix} \"encuentra bugs en mi código\""
+    echo -e "   🧪 ${cmd_prefix} \"genera tests para el módulo de auth\""
+    echo -e "   📚 ${cmd_prefix} \"documenta esta función\""
     
     echo ""
     echo -e "${DIM}────────────────────────────────────────────────────────────────${NC}"
@@ -306,14 +320,16 @@ configuracion_inicial_completa() {
     
     echo ""
     echo -e "${GREEN}${BOLD}🎉 ¡Configuración completada exitosamente!${NC}"
+    local cmd_prefix=$(get_command_prefix)
+    
     echo ""
     echo -e "${BLUE}${BOLD}💡 Comandos útiles para empezar:${NC}"
     echo -e "${DIM}────────────────────────────────────────────────────────────────${NC}"
-    echo -e "   ${CYAN}coder -i${NC}               # Modo chat interactivo"
-    echo -e "   ${CYAN}coder \"pregunta\"${NC}      # Consulta directa"
-    echo -e "   ${CYAN}coder -contexto${NC}        # Regenerar contexto del proyecto"
-    echo -e "   ${CYAN}coder /init${NC}            # Inicializar proyecto"
-    echo -e "   ${CYAN}coder -llm${NC}             # Cambiar modelo de IA"
+    echo -e "   ${CYAN}${cmd_prefix} -i${NC}               # Modo chat interactivo"
+    echo -e "   ${CYAN}${cmd_prefix} \"pregunta\"${NC}      # Consulta directa"
+    echo -e "   ${CYAN}${cmd_prefix} -contexto${NC}        # Regenerar contexto del proyecto"
+    echo -e "   ${CYAN}${cmd_prefix} /init${NC}            # Inicializar proyecto"
+    echo -e "   ${CYAN}${cmd_prefix} -llm${NC}             # Cambiar modelo de IA"
     echo ""
     echo -e "${DIM}¡Ya puedes empezar a usar Asis-coder! 🚀${NC}"
 } 

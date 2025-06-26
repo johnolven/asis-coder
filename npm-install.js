@@ -97,11 +97,17 @@ bash "${coderScript.replace(/\\/g, '/')}" %*
 
 function installUnix(packagePath, coderScript) {
     const installScript = path.join(packagePath, 'install.sh');
+    const libDir = path.join(packagePath, 'lib');
     
     // Verificar que el script de instalación existe
     if (!fs.existsSync(installScript)) {
         console.error('❌ Error: No se encontró install.sh');
         process.exit(1);
+    }
+    
+    // Crear directorio lib si no existe
+    if (!fs.existsSync(libDir)) {
+        fs.mkdirSync(libDir, { recursive: true });
     }
     
     // Hacer el script ejecutable

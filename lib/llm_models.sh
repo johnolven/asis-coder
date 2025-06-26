@@ -16,42 +16,45 @@ update_llm_choice() {
     local DIM='\033[2m'
     local NC='\033[0m'
     
+    # Cargar idioma
+    load_language
+    
     clear
-    echo -e "${CYAN}${BOLD}🤖 SELECCIÓN DE LLM${NC}"
+    echo -e "${CYAN}${BOLD}$(get_text "llm_selection")${NC}"
     echo -e "${DIM}════════════════════════════════════════════════════════════════${NC}"
     echo ""
-    echo -e "${YELLOW}Selecciona tu asistente de IA preferido:${NC}"
+    echo -e "${YELLOW}$(get_text "select_ai_assistant")${NC}"
     echo ""
     echo -e "${GREEN}${BOLD}1. ChatGPT${NC} ${DIM}(OpenAI)${NC}"
-    echo -e "   💰 Costo medio | 🧠 Muy inteligente | ⚡ Rápido"
-    echo -e "   🔹 14 modelos: gpt-3.5-turbo → o4-mini"
+    echo -e "   $(get_text "cost_medium") | $(get_text "very_smart") | $(get_text "fast")"
+    echo -e "   🔹 14 $(get_text "models"): gpt-3.5-turbo → o4-mini"
     echo ""
     echo -e "${PURPLE}${BOLD}2. Claude${NC} ${DIM}(Anthropic)${NC}"
-    echo -e "   💎 Premium | 🎨 Creativo | 📝 Excelente para escritura"
-    echo -e "   🔹 8 modelos: claude-3-haiku → claude-opus-4"
+    echo -e "   $(get_text "premium") | $(get_text "creative") | $(get_text "excellent_writing")"
+    echo -e "   🔹 8 $(get_text "models"): claude-3-haiku → claude-opus-4"
     echo ""
     echo -e "${CYAN}${BOLD}3. Gemini${NC} ${DIM}(Google)${NC}"
-    echo -e "   🆓 Gratis | 📊 Datos actualizados | 🔍 Búsqueda integrada"
-    echo -e "   🔹 8 modelos: gemini-1.5-flash → gemini-2.5-pro"
+    echo -e "   $(get_text "free") | $(get_text "updated_data") | $(get_text "integrated_search")"
+    echo -e "   🔹 8 $(get_text "models"): gemini-1.5-flash → gemini-2.5-pro"
     echo ""
     
-    read -p "$(echo -e "${YELLOW}Ingresa tu elección (1-3): ${NC}")" llm_choice_input
+    read -p "$(echo -e "${YELLOW}$(get_text "enter_choice") (1-3): ${NC}")" llm_choice_input
     
     case $llm_choice_input in
         1)
             llm_choice="chatgpt"
-            echo -e "${GREEN}✅ ChatGPT seleccionado${NC}"
+            echo -e "${GREEN}✅ ChatGPT $(get_text "selected")${NC}"
             ;;
         2)
             llm_choice="claude"
-            echo -e "${PURPLE}✅ Claude seleccionado${NC}"
+            echo -e "${PURPLE}✅ Claude $(get_text "selected")${NC}"
             ;;
         3)
             llm_choice="gemini"
-            echo -e "${CYAN}✅ Gemini seleccionado${NC}"
+            echo -e "${CYAN}✅ Gemini $(get_text "selected")${NC}"
             ;;
         *)
-            echo -e "${YELLOW}⚠️ Opción no válida. Seleccionando ChatGPT por defecto.${NC}"
+            echo -e "${YELLOW}$(get_text "invalid_option")${NC}"
             llm_choice="chatgpt"
             ;;
     esac
@@ -80,10 +83,10 @@ update_llm_choice() {
     
     # Solo pedir API key si no existe
     if ! $api_key_exists; then
-        echo -e "${YELLOW}💡 No se encontró API key para $llm_choice${NC}"
+        echo -e "${YELLOW}$(get_text "api_key_for") $llm_choice${NC}"
         update_api_token_internal
     else
-        echo -e "${GREEN}✅ API key de $llm_choice ya configurada${NC}"
+        echo -e "${GREEN}$(get_text "already_configured") $llm_choice ya configurada${NC}"
     fi
     
     # Seleccionar modelo
@@ -115,7 +118,7 @@ update_api_token() {
     if ! $api_key_exists; then
         update_api_token_internal
     else
-        echo -e "${GREEN}✅ API key de $llm_choice ya configurada${NC}"
+        echo -e "${GREEN}$(get_text "already_configured") $llm_choice ya configurada${NC}"
     fi
 }
 
@@ -133,39 +136,42 @@ update_api_token_internal() {
     local BOLD='\033[1m'
     local NC='\033[0m'
     
+    # Cargar idioma
+    load_language
+    
     echo ""
-    echo -e "${CYAN}${BOLD}🔑 CONFIGURACIÓN DE API KEY${NC}"
+    echo -e "${CYAN}${BOLD}$(get_text "api_key_config")${NC}"
     echo -e "${YELLOW}────────────────────────────────────────────────────────────────${NC}"
     
     case "$llm_choice" in
         "chatgpt")
-            echo -e "${GREEN}📋 Para obtener tu API key de ChatGPT:${NC}"
+            echo -e "${GREEN}$(get_text "get_chatgpt_key")${NC}"
             echo -e "   1. Ve a: ${CYAN}https://platform.openai.com/api-keys${NC}"
-            echo -e "   2. Inicia sesión y crea una nueva API key"
-            echo -e "   3. Copia la key (empieza con 'sk-')"
+            echo -e "   2. $(get_text "login_create_key")"
+            echo -e "   3. $(get_text "copy_key") ($(get_text "starts_with") 'sk-')"
             echo ""
-            echo -e "${CYAN}🔒 Por seguridad, la API key no se mostrará mientras escribes${NC}"
-            read -s -p "$(echo -e "${YELLOW}Ingresa tu API key de ChatGPT: ${NC}")" api_key
+            echo -e "${CYAN}$(get_text "api_key_hidden")${NC}"
+            read -s -p "$(echo -e "${YELLOW}$(get_text "enter_api_key_prompt") de ChatGPT: ${NC}")" api_key
             token_var="chatgpt_api_key"
             ;;
         "claude")
-            echo -e "${GREEN}📋 Para obtener tu API key de Claude:${NC}"
+            echo -e "${GREEN}$(get_text "get_claude_key")${NC}"
             echo -e "   1. Ve a: ${CYAN}https://console.anthropic.com/settings/keys${NC}"
-            echo -e "   2. Inicia sesión y crea una nueva API key"
-            echo -e "   3. Copia la key (empieza con 'sk-ant-api03-')"
+            echo -e "   2. $(get_text "login_create_key")"
+            echo -e "   3. $(get_text "copy_key") ($(get_text "starts_with") 'sk-ant-api03-')"
             echo ""
-            echo -e "${CYAN}🔒 Por seguridad, la API key no se mostrará mientras escribes${NC}"
-            read -s -p "$(echo -e "${YELLOW}Ingresa tu API key de Claude: ${NC}")" api_key
+            echo -e "${CYAN}$(get_text "api_key_hidden")${NC}"
+            read -s -p "$(echo -e "${YELLOW}$(get_text "enter_api_key_prompt") de Claude: ${NC}")" api_key
             token_var="claude_api_key"
             ;;
         "gemini")
-            echo -e "${GREEN}📋 Para obtener tu API key de Gemini:${NC}"
+            echo -e "${GREEN}$(get_text "get_gemini_key")${NC}"
             echo -e "   1. Ve a: ${CYAN}https://aistudio.google.com/app/apikey${NC}"
-            echo -e "   2. Inicia sesión con tu cuenta Google"
-            echo -e "   3. Crea una nueva API key"
+            echo -e "   2. $(get_text "login_create_key")"
+            echo -e "   3. $(get_text "copy_key")"
             echo ""
-            echo -e "${CYAN}🔒 Por seguridad, la API key no se mostrará mientras escribes${NC}"
-            read -s -p "$(echo -e "${YELLOW}Ingresa tu API key de Gemini: ${NC}")" api_key
+            echo -e "${CYAN}$(get_text "api_key_hidden")${NC}"
+            read -s -p "$(echo -e "${YELLOW}$(get_text "enter_api_key_prompt") de Gemini: ${NC}")" api_key
             token_var="gemini_api_key"
             ;;
     esac
@@ -176,9 +182,9 @@ update_api_token_internal() {
         update_config_value "$token_var" "$api_key"
         eval "$token_var='$api_key'"
         log "Token de API para $llm_choice actualizado."
-        echo -e "${GREEN}✅ API key guardada correctamente${NC}"
+        echo -e "${GREEN}$(get_text "api_key_saved")${NC}"
     else
-        echo -e "${RED}❌ No se proporcionó API key${NC}"
+        echo -e "${RED}$(get_text "no_api_key")${NC}"
         return 1
     fi
 }

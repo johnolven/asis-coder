@@ -112,7 +112,10 @@ mostrar_estado_validacion() {
     local DIM='\033[2m'
     local NC='\033[0m'
     
-    echo -e "${CYAN}${BOLD}🔍 Validando configuración de API...${NC}"
+    # Cargar idioma
+    load_language
+    
+    echo -e "${CYAN}${BOLD}$(get_text "validating_api_config")${NC}"
     echo -e "${DIM}────────────────────────────────────────────────────────────────${NC}"
     
     if [ -f "$CONFIG_FILE" ]; then
@@ -137,7 +140,7 @@ mostrar_estado_validacion() {
                             echo -e "   ${YELLOW}💡 Verifica tu API key en platform.openai.com${NC}"
                             ;;
                         *)
-                            echo -e "   ${RED}❌ ChatGPT: Error desconocido${NC}"
+                            echo -e "   ${RED}❌ ChatGPT: $(get_text "unknown_error")${NC}"
                             ;;
                     esac
                     return 1
@@ -158,7 +161,7 @@ mostrar_estado_validacion() {
                             echo -e "   ${YELLOW}💡 Verifica tu API key en console.anthropic.com${NC}"
                             ;;
                         *)
-                            echo -e "   ${RED}❌ Claude: Error desconocido${NC}"
+                            echo -e "   ${RED}❌ Claude: $(get_text "unknown_error")${NC}"
                             ;;
                     esac
                     return 1
@@ -179,7 +182,7 @@ mostrar_estado_validacion() {
                             echo -e "   ${YELLOW}💡 Verifica tu API key en aistudio.google.com/app/apikey${NC}"
                             ;;
                         *)
-                            echo -e "   ${RED}❌ Gemini: Error desconocido${NC}"
+                            echo -e "   ${RED}❌ Gemini: $(get_text "unknown_error")${NC}"
                             ;;
                     esac
                     return 1
@@ -206,7 +209,7 @@ mostrar_error_configuracion() {
     local BOLD='\033[1m'
     local NC='\033[0m'
     
-    echo -e "${RED}${BOLD}❌ Error de Configuración${NC}"
+    echo -e "${RED}${BOLD}$(get_text "config_error")${NC}"
     echo -e "${YELLOW}🔧 Se requiere configuración antes de continuar.${NC}"
     echo ""
     echo -e "${YELLOW}Opciones disponibles:${NC}"
@@ -257,7 +260,7 @@ probar_configuracion_api() {
                 echo ""
                 echo -e "${GREEN}🎉 Tu configuración está funcionando correctamente.${NC}"
             else
-                echo -e "${RED}❌ Error en la prueba${NC}"
+                echo -e "${RED}$(get_text "test_error")${NC}"
                 echo ""
                 mostrar_estado_validacion
             fi

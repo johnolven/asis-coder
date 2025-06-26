@@ -123,6 +123,7 @@ consultar_llm() {
         if [ -n "$content" ] && [ "$content" != "null" ]; then
             echo "$content"
         else
+            load_language
             echo "❌ Error: No se pudo extraer el contenido de la respuesta."
             if $DEBUG; then
                 echo "Respuesta completa: $response"
@@ -133,16 +134,17 @@ consultar_llm() {
             if [ -n "$error_message" ] && [ "$error_message" != "null" ]; then
                 echo "💡 Error de API: $error_message"
                 if echo "$error_message" | grep -qi "credit"; then
-                    echo "🔥 Parece que no tienes créditos suficientes en tu cuenta."
+                    echo "$(get_text "no_credits")"
                 elif echo "$error_message" | grep -qi "key"; then
-                    echo "🔑 Verifica que tu API key sea válida."
+                    echo "$(get_text "verify_api_key")"
                 fi
             fi
         fi
     else
+        load_language
         log "Error al recibir respuesta de $llm_choice."
-        echo "❌ Error: No se pudo obtener una respuesta del servidor."
-        echo "💡 Verifica tu conexión a internet y tu API key."
+        echo "$(get_text "error_no_response")"
+        echo "$(get_text "check_connection")"
     fi
 }
 
@@ -179,15 +181,18 @@ modo_interactivo() {
     # Crear prompt inicial con contexto si existe
     local prompt_completo="Eres un asistente de desarrollo experto. "
     
+    # Cargar idioma
+    load_language
+    
     if [[ -n "$archivo_contexto" ]]; then
-        echo -e "${GREEN}📄 Contexto del proyecto cargado${NC}"
+        echo -e "${GREEN}$(get_text "project_context_loaded")${NC}"
         prompt_completo+="Aquí está el contexto del proyecto actual:
 
 $(cat "$archivo_contexto")
 
 Por favor, ayúdame con mis preguntas sobre este proyecto."
     else
-        echo -e "${YELLOW}⚠️ No hay contexto del proyecto. Usa 'coder -contexto' para generarlo.${NC}"
+        echo -e "${YELLOW}$(get_text "no_project_context")${NC}"
         prompt_completo+="Ayúdame con mis preguntas de programación."
     fi
     
@@ -309,9 +314,12 @@ limpiar_historial() {
     local GREEN='\033[0;32m'
     local NC='\033[0m'
     
+    # Cargar idioma
+    load_language
+    
     echo -e "${YELLOW}🧹 Limpiando historial de conversaciones...${NC}"
     rm -f "$CONFIG_DIR"/historial_*.txt
-    echo -e "${GREEN}✅ Historial limpiado${NC}"
+    echo -e "${GREEN}$(get_text "history_cleaned")${NC}"
 }
 
 # Función para crear nuevo hito
@@ -332,7 +340,10 @@ mostrar_historiales() {
     local DIM='\033[2m'
     local NC='\033[0m'
     
-    echo -e "${CYAN}📚 Historiales de conversaciones:${NC}"
+    # Cargar idioma
+    load_language
+    
+    echo -e "${CYAN}$(get_text "available_histories"):${NC}"
     echo -e "${DIM}────────────────────────────────────────────────────────────────${NC}"
     
     local count=0
@@ -346,6 +357,6 @@ mostrar_historiales() {
     done
     
     if [ $count -eq 0 ]; then
-        echo -e "${DIM}No hay historiales guardados${NC}"
+        echo -e "${DIM}$(get_text "no_history")${NC}"
     fi
 } 
