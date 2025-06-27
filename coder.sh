@@ -110,7 +110,7 @@ if [ ! -d "$LIB_DIR" ]; then
 fi
 
 # Importar todos los módulos
-if $DEBUG; then
+        if $DEBUG; then
     echo "🔄 Cargando módulos..."
 fi
 
@@ -169,12 +169,12 @@ fi
 if [ -f "$LIB_DIR/llm_communication.sh" ]; then
     source "$LIB_DIR/llm_communication.sh"
     if $DEBUG; then echo "✅ Módulo de comunicación con LLMs cargado"; fi
-else
+        else
     echo "❌ Error: No se encontró llm_communication.sh en $LIB_DIR"
     exit 1
 fi
-
-if $DEBUG; then
+        
+        if $DEBUG; then
     echo "🎉 Todos los módulos cargados exitosamente"
     echo ""
 fi
@@ -254,4 +254,4 @@ main() {
 trap cleanup EXIT
 
 # Ejecutar función principal con todos los argumentos
-main "$@" 
+main "$@"

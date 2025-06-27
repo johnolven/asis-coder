@@ -2,7 +2,7 @@
 
 **Your AI Development Assistant** - A modular CLI that connects your code with ChatGPT, Claude, and Gemini for enhanced development workflow.
 
-[![npm version](https://badge.fury.io/js/@johnolven%2Fasis-coder.svg)](https://badge.fury.io/js/@johnolven%2Fasis-coder)
+[![npm version](https://badge.fury.io/js/asis-coder.svg)](https://badge.fury.io/js/asis-coder)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## ✨ Features
@@ -20,14 +20,14 @@
 ### 🚀 Option 1: NPX (Recommended)
 ```bash
 # Run directly without installing anything
-npx @johnolven/asis-coder setup
+npx asis-coder setup
 
 ```
 
 ### 📦 Option 2: Global Installation
 ```bash
 # Install globally to use 'coder' command everywhere
-npm install -g @johnolven/asis-coder
+npm install -g asis-coder
 
 # Then use short commands:
 coder setup
@@ -38,8 +38,8 @@ coder "explain this project"
 ### ⚠️ Option 3: Local Installation (Not recommended)
 ```bash
 # Local install still requires npx to run
-npm install @johnolven/asis-coder
-npx @johnolven/asis-coder setup  # Still need npx!
+npm install asis-coder
+npx asis-coder setup  # Still need npx!
 ```
 
 ## 🖥️ Platform Compatibility
@@ -55,9 +55,9 @@ Requires one of these environments:
 
 **On Windows use:**
 ```bash
-npx @johnolven/asis-coder setup    # Initial configuration
-npx @johnolven/asis-coder -i       # Interactive mode
-npx @johnolven/asis-coder "question"  # Direct query
+npx asis-coder setup    # Initial configuration
+npx asis-coder -i       # Interactive mode
+npx asis-coder "question"  # Direct query
 ```
 
 ## 🚀 Quick Start
@@ -65,7 +65,7 @@ npx @johnolven/asis-coder "question"  # Direct query
 ### With Global Installation:
 1. **Install globally**:
    ```bash
-   npm install -g @johnolven/asis-coder
+   npm install -g asis-coder
    ```
 
 2. **Initial Setup**:
@@ -92,23 +92,23 @@ npx @johnolven/asis-coder "question"  # Direct query
 ### With NPX (no installation):
 1. **Initial Setup**:
    ```bash
-   npx @johnolven/asis-coder setup  # Configure your API keys
+   npx asis-coder setup  # Configure your API keys
    ```
 
 2. **Generate Project Context**:
    ```bash
-   npx @johnolven/asis-coder -context  # Analyze your project
+   npx asis-coder -context  # Analyze your project
    ```
 
 3. **Ask Questions**:
    ```bash
-   npx @johnolven/asis-coder "explain this project structure"
-   npx @johnolven/asis-coder "how can I optimize this code?"
+   npx asis-coder "explain this project structure"
+   npx asis-coder "how can I optimize this code?"
    ```
 
 4. **Interactive Mode**:
    ```bash
-   npx @johnolven/asis-coder -i  # Start interactive session
+   npx asis-coder -i  # Start interactive session
    ```
 
 ## 🧠 Supported AI Models
