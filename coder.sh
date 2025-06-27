@@ -31,8 +31,8 @@ if [ ! -f "$SCRIPT_PATH" ] || [[ "$SCRIPT_PATH" == *"../"* ]]; then
     # Método alternativo: buscar el script en ubicaciones conocidas de npm
     if command -v npm >/dev/null 2>&1; then
         NPM_GLOBAL_DIR="$(npm root -g 2>/dev/null)"
-        if [ -n "$NPM_GLOBAL_DIR" ] && [ -f "$NPM_GLOBAL_DIR/@johnolven/asis-coder/coder.sh" ]; then
-            SCRIPT_PATH="$NPM_GLOBAL_DIR/@johnolven/asis-coder/coder.sh"
+        if [ -n "$NPM_GLOBAL_DIR" ] && [ -f "$NPM_GLOBAL_DIR/asis-coder/coder.sh" ]; then
+    SCRIPT_PATH="$NPM_GLOBAL_DIR/asis-coder/coder.sh"
         fi
     fi
 fi
@@ -45,14 +45,14 @@ if [ -d "$SCRIPT_DIR/lib" ]; then
     LIB_DIR="$SCRIPT_DIR/lib"
 else
     # Para instalaciones npm, el script puede estar en bin/ y lib/ en ../lib/
-    # o en node_modules/@johnolven/asis-coder/lib
+    # o en node_modules/asis-coder/lib
     POSSIBLE_PATHS=(
         "$SCRIPT_DIR/../lib"  # Para instalación global npm
         "$(dirname "$SCRIPT_DIR")/lib"  # Para instalación global npm (variante)
-        "$(npm root -g 2>/dev/null)/@johnolven/asis-coder/lib"  # Global npm root
-        "$(npm root 2>/dev/null)/@johnolven/asis-coder/lib"  # Local npm root
-        "$HOME/.npm/_npx/*/node_modules/@johnolven/asis-coder/lib"  # npx cache
-        "/tmp/_npx/*/node_modules/@johnolven/asis-coder/lib"  # npx temp
+            "$(npm root -g 2>/dev/null)/asis-coder/lib"  # Global npm root
+    "$(npm root 2>/dev/null)/asis-coder/lib"  # Local npm root
+    "$HOME/.npm/_npx/*/node_modules/asis-coder/lib"  # npx cache
+    "/tmp/_npx/*/node_modules/asis-coder/lib"  # npx temp
     )
     
     LIB_DIR=""
@@ -77,8 +77,8 @@ else
         PARENT_DIR="$(dirname "$SCRIPT_DIR")"
         if [ -d "$PARENT_DIR/lib" ]; then
             LIB_DIR="$PARENT_DIR/lib"
-        elif [ -d "$PARENT_DIR/@johnolven/asis-coder/lib" ]; then
-            LIB_DIR="$PARENT_DIR/@johnolven/asis-coder/lib"
+        elif [ -d "$PARENT_DIR/asis-coder/lib" ]; then
+    LIB_DIR="$PARENT_DIR/asis-coder/lib"
         else
             LIB_DIR="$SCRIPT_DIR/lib"
         fi

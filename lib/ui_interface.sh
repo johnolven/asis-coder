@@ -296,9 +296,9 @@ ofrecer_instalacion_global() {
         echo -e "¿Te gustaría instalarlo globalmente para usar comandos más cortos?"
         echo ""
         echo -e "${GREEN}Con instalación global podrás usar:${NC}"
-        echo -e "   ${CYAN}coder setup${NC}      en lugar de  ${DIM}npx @johnolven/asis-coder setup${NC}"
-        echo -e "   ${CYAN}coder -i${NC}         en lugar de  ${DIM}npx @johnolven/asis-coder -i${NC}"
-        echo -e "   ${CYAN}coder \"pregunta\"${NC} en lugar de  ${DIM}npx @johnolven/asis-coder \"pregunta\"${NC}"
+           echo -e "   ${CYAN}coder setup${NC}      en lugar de  ${DIM}npx asis-coder setup${NC}"
+   echo -e "   ${CYAN}coder -i${NC}         en lugar de  ${DIM}npx asis-coder -i${NC}"
+   echo -e "   ${CYAN}coder \"pregunta\"${NC} en lugar de  ${DIM}npx asis-coder \"pregunta\"${NC}"
         echo ""
         echo -e "¿Quieres instalar asis-coder globalmente? (y/n)"
         read -p "$(echo -e "${CYAN}> ${NC}")" install_choice
@@ -306,7 +306,7 @@ ofrecer_instalacion_global() {
         if [[ "$install_choice" == "y" || "$install_choice" == "Y" ]]; then
             echo ""
             echo -e "${YELLOW}📦 Instalando globalmente...${NC}"
-            if npm install -g @johnolven/asis-coder; then
+            if npm install -g asis-coder; then
                 echo -e "${GREEN}✅ ¡Asis-coder instalado globalmente exitosamente!${NC}"
                 echo ""
                 echo -e "${BLUE}${BOLD}🎉 Ahora puedes usar comandos cortos:${NC}"

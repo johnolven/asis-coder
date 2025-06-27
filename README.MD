@@ -133,7 +133,7 @@ npx asis-coder "question"  # Direct query
 
 ## 📋 Available Commands
 
-### If installed globally (`npm install -g @johnolven/asis-coder`):
+### If installed globally (`npm install -g asis-coder`):
 ```bash
 # Configuration
 coder setup                    # Initial setup wizard
@@ -159,29 +159,29 @@ coder -help                    # Show help
 ### If using npx (no installation):
 ```bash
 # Configuration
-npx @johnolven/asis-coder setup                    # Initial setup wizard
-npx @johnolven/asis-coder -token                   # Update API tokens
-npx @johnolven/asis-coder -model                   # Change AI model
-npx @johnolven/asis-coder -llm                     # Switch LLM provider
+npx asis-coder setup                    # Initial setup wizard
+npx asis-coder -token                   # Update API tokens
+npx asis-coder -model                   # Change AI model
+npx asis-coder -llm                     # Switch LLM provider
 
 # Project Analysis
-npx @johnolven/asis-coder -context                 # Generate project context
-npx @johnolven/asis-coder -project                 # Detect project type
+npx asis-coder -context                 # Generate project context
+npx asis-coder -project                 # Detect project type
 
 # Interaction
-npx @johnolven/asis-coder "your question"          # Direct query
-npx @johnolven/asis-coder -i                       # Interactive mode
-npx @johnolven/asis-coder -history                 # View conversation history
+npx asis-coder "your question"          # Direct query
+npx asis-coder -i                       # Interactive mode
+npx asis-coder -history                 # View conversation history
 
 # Utilities
-npx @johnolven/asis-coder -test                    # Test API configuration
-npx @johnolven/asis-coder -clean                   # Clear conversation history
-npx @johnolven/asis-coder -help                    # Show help
+npx asis-coder -test                    # Test API configuration
+npx asis-coder -clean                   # Clear conversation history
+npx asis-coder -help                    # Show help
 ```
 
 ## 🌟 Usage Examples
 
-### With Global Installation (`npm install -g @johnolven/asis-coder`):
+### With Global Installation (`npm install -g asis-coder`):
 
 #### Basic Query
 ```bash
@@ -211,26 +211,26 @@ coder -llm    # Switch between ChatGPT, Claude, Gemini
 
 #### Basic Query
 ```bash
-npx @johnolven/asis-coder "What's the best way to optimize this React component?"
+npx asis-coder "What's the best way to optimize this React component?"
 ```
 
 #### Project Analysis
 ```bash
-npx @johnolven/asis-coder -context
-npx @johnolven/asis-coder "Analyze the architecture of this project and suggest improvements"
+npx asis-coder -context
+npx asis-coder "Analyze the architecture of this project and suggest improvements"
 ```
 
 #### Interactive Development Session
 ```bash
-npx @johnolven/asis-coder -i
+npx asis-coder -i
 # Start a conversation about your code
 # Get real-time suggestions and explanations
 ```
 
 #### Switch Between Models
 ```bash
-npx @johnolven/asis-coder -model  # Choose from 30+ available models
-npx @johnolven/asis-coder -llm    # Switch between ChatGPT, Claude, Gemini
+npx asis-coder -model  # Choose from 30+ available models
+npx asis-coder -llm    # Switch between ChatGPT, Claude, Gemini
 ```
 
 ## 🏗️ Architecture
@@ -283,7 +283,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🔗 Links
 
-- [npm Package](https://www.npmjs.com/package/@johnolven/asis-coder)
+- [npm Package](https://www.npmjs.com/package/asis-coder)
 - [GitHub Repository](https://github.com/johnolven/asis-coder)
 - [Issues & Support](https://github.com/johnolven/asis-coder/issues)
 
