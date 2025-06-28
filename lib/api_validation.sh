@@ -122,22 +122,22 @@ mostrar_estado_validacion() {
         source "$CONFIG_FILE" 2>/dev/null || true
         
         if [ -n "$llm_choice" ]; then
-            echo -e "   ${YELLOW}⏳${NC} Verificando API de ${BOLD}$llm_choice${NC}..."
+            echo -e "   ${YELLOW}⏳${NC} $(get_text "verifying_api") ${BOLD}$llm_choice${NC}..."
             
             if [ "$llm_choice" == "chatgpt" ] && [ -n "$chatgpt_api_key" ]; then
                 local error_result=$(validar_chatgpt_api "$chatgpt_api_key")
                 if [ $? -eq 0 ]; then
-                    echo -e "   ${GREEN}✅ API de ChatGPT válida${NC}"
+                    echo -e "   ${GREEN}✅ $(get_text "chatgpt_api_valid")${NC}"
                     return 0
                 else
                     case "$error_result" in
                         "ERROR_CREDITS")
-                            echo -e "   ${RED}❌ ChatGPT: Sin créditos suficientes${NC}"
-                            echo -e "   ${YELLOW}💡 Ve a platform.openai.com/account/billing${NC}"
+                            echo -e "   ${RED}❌ $(get_text "chatgpt_insufficient_credits")${NC}"
+                            echo -e "   ${YELLOW}💡 $(get_text "visit_openai_billing")${NC}"
                             ;;
                         "ERROR_API_KEY")
-                            echo -e "   ${RED}❌ ChatGPT: API key inválida${NC}"
-                            echo -e "   ${YELLOW}💡 Verifica tu API key en platform.openai.com${NC}"
+                            echo -e "   ${RED}❌ $(get_text "chatgpt_invalid_api_key")${NC}"
+                            echo -e "   ${YELLOW}💡 $(get_text "verify_openai_key")${NC}"
                             ;;
                         *)
                             echo -e "   ${RED}❌ ChatGPT: $(get_text "unknown_error")${NC}"
@@ -148,17 +148,17 @@ mostrar_estado_validacion() {
             elif [ "$llm_choice" == "claude" ] && [ -n "$claude_api_key" ]; then
                 local error_result=$(validar_claude_api "$claude_api_key")
                 if [ $? -eq 0 ]; then
-                    echo -e "   ${GREEN}✅ API de Claude válida${NC}"
+                    echo -e "   ${GREEN}✅ $(get_text "claude_api_valid")${NC}"
                     return 0
                 else
                     case "$error_result" in
                         "ERROR_CREDITS")
-                            echo -e "   ${RED}❌ Claude: Sin créditos suficientes${NC}"
-                            echo -e "   ${YELLOW}💡 Ve a console.anthropic.com/settings/billing${NC}"
+                            echo -e "   ${RED}❌ $(get_text "claude_insufficient_credits")${NC}"
+                            echo -e "   ${YELLOW}💡 $(get_text "visit_anthropic_billing")${NC}"
                             ;;
                         "ERROR_API_KEY")
-                            echo -e "   ${RED}❌ Claude: API key inválida${NC}"
-                            echo -e "   ${YELLOW}💡 Verifica tu API key en console.anthropic.com${NC}"
+                            echo -e "   ${RED}❌ $(get_text "claude_invalid_api_key")${NC}"
+                            echo -e "   ${YELLOW}💡 $(get_text "verify_anthropic_key")${NC}"
                             ;;
                         *)
                             echo -e "   ${RED}❌ Claude: $(get_text "unknown_error")${NC}"
@@ -169,17 +169,17 @@ mostrar_estado_validacion() {
             elif [ "$llm_choice" == "gemini" ] && [ -n "$gemini_api_key" ]; then
                 local error_result=$(validar_gemini_api "$gemini_api_key")
                 if [ $? -eq 0 ]; then
-                    echo -e "   ${GREEN}✅ API de Gemini válida${NC}"
+                    echo -e "   ${GREEN}✅ $(get_text "gemini_api_valid")${NC}"
                     return 0
                 else
                     case "$error_result" in
                         "ERROR_CREDITS")
-                            echo -e "   ${RED}❌ Gemini: Cuota excedida${NC}"
-                            echo -e "   ${YELLOW}💡 Ve a console.cloud.google.com/apis/api/generativelanguage.googleapis.com${NC}"
+                            echo -e "   ${RED}❌ $(get_text "gemini_quota_exceeded")${NC}"
+                            echo -e "   ${YELLOW}💡 $(get_text "visit_google_quota")${NC}"
                             ;;
                         "ERROR_API_KEY")
-                            echo -e "   ${RED}❌ Gemini: API key inválida${NC}"
-                            echo -e "   ${YELLOW}💡 Verifica tu API key en aistudio.google.com/app/apikey${NC}"
+                            echo -e "   ${RED}❌ $(get_text "gemini_invalid_api_key")${NC}"
+                            echo -e "   ${YELLOW}💡 $(get_text "verify_google_key")${NC}"
                             ;;
                         *)
                             echo -e "   ${RED}❌ Gemini: $(get_text "unknown_error")${NC}"
@@ -188,15 +188,15 @@ mostrar_estado_validacion() {
                     return 1
                 fi
             else
-                echo -e "   ${RED}❌ No hay API key configurada para $llm_choice${NC}"
+                echo -e "   ${RED}❌ $(get_text "no_api_key_configured") $llm_choice${NC}"
                 return 1
             fi
         else
-            echo -e "   ${RED}❌ No hay LLM configurado${NC}"
+            echo -e "   ${RED}❌ $(get_text "no_llm_configured")${NC}"
             return 1
         fi
     else
-        echo -e "   ${RED}❌ No se encontró archivo de configuración${NC}"
+        echo -e "   ${RED}❌ $(get_text "config_file_not_found")${NC}"
         return 1
     fi
 }
@@ -210,13 +210,13 @@ mostrar_error_configuracion() {
     local NC='\033[0m'
     
     echo -e "${RED}${BOLD}$(get_text "config_error")${NC}"
-    echo -e "${YELLOW}🔧 Se requiere configuración antes de continuar.${NC}"
+    echo -e "${YELLOW}🔧 $(get_text "config_required_before_continue").${NC}"
     echo ""
-    echo -e "${YELLOW}Opciones disponibles:${NC}"
-    echo -e "   ${CYAN}1.${NC} Configurar desde cero: ${BOLD}coder setup${NC}"
-    echo -e "   ${CYAN}2.${NC} Cambiar LLM: ${BOLD}coder -llm${NC}"
-    echo -e "   ${CYAN}3.${NC} Ver configuración: ${BOLD}coder config${NC}"
-    echo -e "   ${CYAN}4.${NC} Probar APIs: ${BOLD}coder test${NC}"
+    echo -e "${YELLOW}$(get_text "available_options"):${NC}"
+    echo -e "   ${CYAN}1.${NC} $(get_text "configure_from_scratch"): ${BOLD}coder setup${NC}"
+    echo -e "   ${CYAN}2.${NC} $(get_text "change_llm"): ${BOLD}coder -llm${NC}"
+    echo -e "   ${CYAN}3.${NC} $(get_text "view_config"): ${BOLD}coder config${NC}"
+    echo -e "   ${CYAN}4.${NC} $(get_text "test_apis"): ${BOLD}coder test${NC}"
     echo ""
 }
 
@@ -231,7 +231,7 @@ probar_configuracion_api() {
     local NC='\033[0m'
     
     clear
-    echo -e "${CYAN}${BOLD}🧪 PRUEBA DE CONFIGURACIÓN${NC}"
+    echo -e "${CYAN}${BOLD}🧪 $(get_text "configuration_test")${NC}"
     echo -e "${DIM}════════════════════════════════════════════════════════════════${NC}"
     echo ""
     
@@ -239,41 +239,41 @@ probar_configuracion_api() {
         source "$CONFIG_FILE" 2>/dev/null || true
         
         if [ -n "$llm_choice" ]; then
-            echo -e "${YELLOW}🤖 Probando ${BOLD}$llm_choice${NC} con modelo ${BOLD}${model:-por defecto}${NC}..."
+            echo -e "${YELLOW}🤖 $(get_text "testing_llm") ${BOLD}$llm_choice${NC} $(get_text "with_model") ${BOLD}${model:-$(get_text "default")}${NC}..."
             echo ""
             
             # Hacer consulta de prueba
-            local test_query="Responde brevemente: ¿Estás funcionando correctamente?"
-            echo -e "${DIM}Consulta de prueba: $test_query${NC}"
+            local test_query="$(get_text "test_query")"
+            echo -e "${DIM}$(get_text "test_query_label"): $test_query${NC}"
             echo ""
             
-            echo -e "${YELLOW}⏳ Enviando consulta...${NC}"
+            echo -e "${YELLOW}⏳ $(get_text "sending_query")...${NC}"
             local response=$(consultar_llm "$test_query")
             
             if [ $? -eq 0 ] && [ -n "$response" ]; then
-                echo -e "${GREEN}${BOLD}✅ ¡Prueba exitosa!${NC}"
+                echo -e "${GREEN}${BOLD}✅ $(get_text "test_successful")!${NC}"
                 echo ""
-                echo -e "${BOLD}Respuesta:${NC}"
+                echo -e "${BOLD}$(get_text "response"):${NC}"
                 echo -e "${DIM}────────────────────────────────────────────────────────────────${NC}"
                 echo "$response"
                 echo -e "${DIM}────────────────────────────────────────────────────────────────${NC}"
                 echo ""
-                echo -e "${GREEN}🎉 Tu configuración está funcionando correctamente.${NC}"
+                echo -e "${GREEN}🎉 $(get_text "config_working_correctly").${NC}"
             else
                 echo -e "${RED}$(get_text "test_error")${NC}"
                 echo ""
                 mostrar_estado_validacion
             fi
         else
-            echo -e "${RED}❌ No hay LLM configurado${NC}"
+            echo -e "${RED}❌ $(get_text "no_llm_configured")${NC}"
             mostrar_error_configuracion
         fi
     else
-        echo -e "${RED}❌ No se encontró configuración${NC}"
+        echo -e "${RED}❌ $(get_text "config_not_found")${NC}"
         mostrar_error_configuracion
     fi
     
     echo ""
-    echo -e "${DIM}Presiona Enter para continuar...${NC}"
+    echo -e "${DIM}$(get_text "press_enter_continue")...${NC}"
     read
 } 

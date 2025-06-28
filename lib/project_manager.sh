@@ -91,8 +91,8 @@ preguntar_tipo_proyecto_manual() {
     local BOLD='\033[1m'
     local NC='\033[0m'
     
-    echo -e "${YELLOW}❓ No se pudo detectar el tipo de proyecto automáticamente.${NC}"
-    echo -e "${CYAN}${BOLD}Selecciona el tipo de proyecto:${NC}"
+    echo -e "${YELLOW}❓ $(get_text "project_type_not_detected_manual")${NC}"
+    echo -e "${CYAN}${BOLD}$(get_text "select_project_type"):${NC}"
     echo "1. React"
     echo "2. Node.js"
     echo "3. Vue.js"
@@ -103,12 +103,12 @@ preguntar_tipo_proyecto_manual() {
     echo "8. Spring Boot"
     echo "9. Express.js"
     echo "10. Flutter"
-    echo "11. Otro"
+    echo "11. $(get_text "other")"
     
-    read -p "$(echo -e "${CYAN}Ingresa el número del tipo de proyecto: ${NC}")" tipo_proyecto
+    read -p "$(echo -e "${CYAN}$(get_text "enter_project_type_number"): ${NC}")" tipo_proyecto
     
     if [[ ! "$tipo_proyecto" =~ ^[1-9]$|^1[01]$ ]]; then
-        echo -e "${YELLOW}⚠️ Opción no válida. Seleccionando 'Otro' por defecto.${NC}"
+        echo -e "${YELLOW}⚠️ $(get_text "invalid_option_selecting_other")${NC}"
         tipo_proyecto=11
     fi
 }
@@ -206,7 +206,7 @@ generar_contexto() {
     local BOLD='\033[1m'
     local NC='\033[0m'
     
-    echo -e "${CYAN}${BOLD}📝 Generando contexto del proyecto...${NC}"
+    echo -e "${CYAN}${BOLD}📝 $(get_text "generating_project_context")...${NC}"
     log "Generando archivo de contexto..."
     
     # Detectar automáticamente el tipo de proyecto
@@ -236,9 +236,9 @@ generar_contexto() {
     # Si el archivo de salida existe, eliminarlo
     [ -f "$archivo_salida" ] && rm "$archivo_salida"
 
-    echo -e "${YELLOW}📁 Directorio del proyecto: $directorio_proyecto${NC}"
-    echo -e "${YELLOW}🔍 Directorios a analizar: ${directorios[@]}${NC}"
-    echo -e "${YELLOW}📄 Archivo de salida: $archivo_salida${NC}"
+    echo -e "${YELLOW}📁 $(get_text "project_directory"): $directorio_proyecto${NC}"
+    echo -e "${YELLOW}🔍 $(get_text "directories_to_analyze"): ${directorios[@]}${NC}"
+    echo -e "${YELLOW}📄 $(get_text "output_file"): $archivo_salida${NC}"
 
     # Llamar a la función recursiva para cada directorio especificado
     for dir in "${directorios[@]}"; do
@@ -247,11 +247,11 @@ generar_contexto() {
 
     if [ ! -s "$archivo_salida" ]; then
         log "Advertencia: El archivo de contexto está vacío. No se encontraron archivos para procesar."
-        echo -e "${YELLOW}⚠️ Advertencia: No se encontraron archivos para procesar${NC}"
+        echo -e "${YELLOW}⚠️ $(get_text "warning_no_files_found")${NC}"
     else
         log "Archivo de contexto generado con éxito en $archivo_salida"
-        echo -e "${GREEN}✅ Archivo de contexto generado exitosamente${NC}"
-        echo -e "${GREEN}📄 Ubicación: ${BOLD}$archivo_salida${NC}"
+        echo -e "${GREEN}✅ $(get_text "context_file_generated_successfully")${NC}"
+        echo -e "${GREEN}📄 $(get_text "location"): ${BOLD}$archivo_salida${NC}"
     fi
 }
 
@@ -364,19 +364,19 @@ inicializar_proyecto() {
         source "$CONFIG_FILE"
     fi
     
-    echo -e "${CYAN}${BOLD}🚀 Inicializando proyecto con Asis-coder...${NC}"
+    echo -e "${CYAN}${BOLD}🚀 $(get_text "initializing_project_with_asis")...${NC}"
     
     # Generar contexto automáticamente
-    echo -e "${YELLOW}📝 Generando contexto del proyecto...${NC}"
+    echo -e "${YELLOW}📝 $(get_text "generating_project_context")...${NC}"
     generar_contexto
     
     # Crear archivo CODER.md con información del proyecto
-    echo -e "${YELLOW}📋 Creando guía del proyecto...${NC}"
+    echo -e "${YELLOW}📋 $(get_text "creating_project_guide")...${NC}"
     crear_guia_proyecto
     
     # Sugerir commit del archivo
-    echo -e "${GREEN}✅ Proyecto inicializado correctamente!${NC}"
-    echo -e "${YELLOW}💡 Sugerencia: Ejecuta 'git add CODER.md && git commit -m \"Add Coder project guide\"'${NC}"
+    echo -e "${GREEN}✅ $(get_text "project_initialized_correctly")!${NC}"
+    echo -e "${YELLOW}💡 $(get_text "suggestion_git_commit")${NC}"
 }
 
 # Función para crear guía del proyecto
@@ -394,16 +394,16 @@ crear_guia_proyecto() {
 Contexto del proyecto:
 $(cat "$archivo_contexto")"
 
-        echo "Generando guía del proyecto..."
+        echo "$(get_text "generating_project_guide")..."
         local guia=$(consultar_llm "$prompt")
         
         if [ -n "$guia" ]; then
             echo "$guia" > "CODER.md"
-            echo "✅ Archivo CODER.md creado con la guía del proyecto."
+            echo "✅ $(get_text "coder_md_file_created")."
         else
             echo "$(get_text "error_generate_guide")"
         fi
     else
-        echo "❌ No se encontró archivo de contexto. Ejecuta 'coder -contexto' primero."
+        echo "❌ $(get_text "context_file_not_found")."
     fi
 } 

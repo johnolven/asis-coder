@@ -21,9 +21,9 @@ json_escape() {
 consultar_llm() {
     local pregunta="$1"
     if $DEBUG; then
-        echo "Consulta recibida en consultar_llm:"
+        echo "$(get_text "query_received_in_llm"):"
         echo "$pregunta"
-        echo "Obteniendo configuración de API..."
+        echo "$(get_text "getting_api_config")..."
     fi
     
     # Validar configuración antes de hacer consulta
@@ -45,10 +45,10 @@ consultar_llm() {
     fi
 
     if $DEBUG; then
-        echo "Coder CLI versión: $VERSION"
-        echo "Configuración actual:"
+        echo "$(get_text "coder_cli_version"): $VERSION"
+        echo "$(get_text "current_config"):"
         echo "LLM: $llm_choice"
-        echo "Modelo: $model"
+        echo "$(get_text "model"): $model"
     fi
     
     log "Enviando consulta a $llm_choice..."
@@ -90,7 +90,7 @@ consultar_llm() {
     fi
 
     if $DEBUG; then
-        echo "Petición enviada a $api_url:"
+        echo "$(get_text "request_sent_to") $api_url:"
         echo "$json_data"
     fi
 
@@ -107,7 +107,7 @@ consultar_llm() {
     fi
 
     if $DEBUG; then
-        echo "Respuesta recibida:"
+        echo "$(get_text "response_received"):"
         echo "$response"
     fi
 
@@ -124,9 +124,9 @@ consultar_llm() {
             echo "$content"
         else
             load_language
-            echo "❌ Error: No se pudo extraer el contenido de la respuesta."
+            echo "❌ $(get_text "error_extract_content")."
             if $DEBUG; then
-                echo "Respuesta completa: $response"
+                echo "$(get_text "complete_response"): $response"
             fi
             
             # Verificar errores específicos de la API
@@ -178,47 +178,68 @@ modo_interactivo() {
     local archivo_historial="$CONFIG_DIR/historial_$(date +%Y%m%d_%H%M%S).txt"
     local archivo_contexto=$(encontrar_archivo_contexto)
     
-    # Crear prompt inicial con contexto si existe
-    local prompt_completo="Eres un asistente de desarrollo experto. "
-    
     # Cargar idioma
     load_language
     
+    # Crear prompt inicial con contexto si existe
+    local prompt_completo=""
+    if [ "$CURRENT_LANG" = "es" ]; then
+        prompt_completo="Eres un asistente de desarrollo experto. "
+    else
+        prompt_completo="You are an expert development assistant. "
+    fi
+    
     if [[ -n "$archivo_contexto" ]]; then
         echo -e "${GREEN}$(get_text "project_context_loaded")${NC}"
-        prompt_completo+="Aquí está el contexto del proyecto actual:
+        if [ "$CURRENT_LANG" = "es" ]; then
+            prompt_completo+="Aquí está el contexto del proyecto actual:
 
 $(cat "$archivo_contexto")
 
 Por favor, ayúdame con mis preguntas sobre este proyecto."
+        else
+            prompt_completo+="Here is the current project context:
+
+$(cat "$archivo_contexto")
+
+Please help me with my questions about this project."
+        fi
     else
         echo -e "${YELLOW}$(get_text "no_project_context")${NC}"
-        prompt_completo+="Ayúdame con mis preguntas de programación."
+        if [ "$CURRENT_LANG" = "es" ]; then
+            prompt_completo+="Ayúdame con mis preguntas de programación."
+        else
+            prompt_completo+="Help me with my programming questions."
+        fi
     fi
     
     if $DEBUG; then
-        echo "DEBUG: Prompt inicial configurado:"
+        echo "$(get_text "debug_prompt_configured"):"
         echo "$prompt_completo"
-        echo "DEBUG: Archivo de historial: $archivo_historial"
+        echo "$(get_text "debug_history_file"): $archivo_historial"
     fi
     
     # Loop del modo interactivo
     while true; do
-        read -p "Tú: " entrada
+        read -p "$(get_text "you"): " entrada
         
         if [ "$entrada" = "salir" ] || [ "$entrada" = "exit" ] || [ "$entrada" = "quit" ]; then
-            echo -e "${CYAN}👋 Saliendo del modo interactivo.${NC}"
+            echo -e "${CYAN}$(get_text "exiting_interactive")${NC}"
             break
         fi
         
-        prompt_completo+="\nUsuario: $entrada"
+        if [ "$CURRENT_LANG" = "es" ]; then
+            prompt_completo+="\nUsuario: $entrada"
+        else
+            prompt_completo+="\nUser: $entrada"
+        fi
         if $DEBUG; then
-            echo "DEBUG: Prompt completo enviado al LLM:"
+            echo "$(get_text "debug_complete_prompt_sent"):"
             echo "$prompt_completo"
-            echo "DEBUG: Enviando petición al LLM..."
+            echo "$(get_text "debug_sending_request")..."
         fi
         
-        echo -n "Asistente: Pensando..."
+        echo -n "$(get_text "assistant"): $(get_text "thinking")..."
         
         # Usar un archivo temporal para almacenar la respuesta
         temp_file=$(mktemp)
@@ -235,7 +256,7 @@ Por favor, ayúdame con mis preguntas sobre este proyecto."
             if [ "$current_size" -gt "$last_size" ]; then
                 if $pensando_mostrado; then
                     echo -ne "\r\033[K"  # Borrar la línea actual
-                    echo -n "Asistente: "
+                    echo -n "$(get_text "assistant"): "
                     pensando_mostrado=false
                 fi
                 nuevo_contenido=$(tail -c +$((last_size + 1)) "$temp_file")
@@ -265,7 +286,7 @@ Por favor, ayúdame con mis preguntas sobre este proyecto."
         # Asegurarse de que se muestre el contenido final
         if $pensando_mostrado; then
             echo -ne "\r\033[K"  # Borrar la línea actual
-            echo -n "Asistente: "
+            echo -n "$(get_text "assistant"): "
         fi
         nuevo_contenido=$(tail -c +$((last_size + 1)) "$temp_file")
         respuesta_acumulada+="$nuevo_contenido"
@@ -291,16 +312,16 @@ Por favor, ayúdame con mis preguntas sobre este proyecto."
         rm "$temp_file"
         
         if $DEBUG; then
-            echo "DEBUG: Respuesta recibida del LLM:"
+            echo "$(get_text "debug_response_received"):"
             echo "$respuesta"
         fi
         
-        prompt_completo+="\nAsistente: $respuesta"
+        prompt_completo+="\n$(get_text "assistant"): $respuesta"
 
         # Guardar el historial actualizado
         echo "$prompt_completo" > "$archivo_historial"
         if $DEBUG; then
-            echo "DEBUG: Historial actualizado y guardado en $archivo_historial"
+            echo "$(get_text "debug_history_updated_saved") $archivo_historial"
         fi
     done
     
@@ -328,9 +349,9 @@ nuevo_hito() {
     local GREEN='\033[0;32m'
     local NC='\033[0m'
     
-    echo -e "${CYAN}📝 Creando nuevo hito de conversación...${NC}"
+    echo -e "${CYAN}📝 $(get_text "creating_new_milestone")...${NC}"
     # La próxima conversación empezará con un archivo de historial nuevo
-    echo -e "${GREEN}✅ Próxima conversación será un nuevo hito${NC}"
+    echo -e "${GREEN}✅ $(get_text "next_conversation_new_milestone")${NC}"
 }
 
 # Función para mostrar historiales
@@ -351,7 +372,7 @@ mostrar_historiales() {
         if [ -f "$archivo" ]; then
             local fecha=$(basename "$archivo" | sed 's/historial_//' | sed 's/.txt//' | sed 's/_/ /')
             local tamaño=$(wc -l < "$archivo")
-            echo -e "${YELLOW}📄${NC} $fecha (${tamaño} líneas)"
+            echo -e "${YELLOW}📄${NC} $fecha (${tamaño} $(get_text "lines"))"
             count=$((count + 1))
         fi
     done

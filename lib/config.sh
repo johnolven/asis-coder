@@ -191,8 +191,8 @@ get_text_en() {
         "setup_desc") echo "Let's configure your AI assistant" ;;
         "select_llm") echo "Select your preferred LLM:" ;;
         "enter_api_key") echo "Enter your API key" ;;
-        "api_key_hidden") echo "🔒 For security, the API key won't be displayed while typing" ;;
-        "api_key_valid") echo "✅ API key is valid!" ;;
+        "api_key_hidden") echo "🔒 For security, the API key will not be displayed while typing" ;;
+        "api_key_valid") echo "✅ Valid API key!" ;;
         "api_key_invalid") echo "❌ Invalid API key. Please try again." ;;
         "select_model") echo "Select a model:" ;;
         "setup_complete") echo "🎉 Setup completed successfully!" ;;
@@ -239,25 +239,145 @@ get_text_en() {
         "no_history") echo "📭 No conversation history found" ;;
         "available_histories") echo "📚 Available conversation histories:" ;;
         "select_history") echo "Select a history to view (or 'q' to exit):" ;;
-        "invalid_selection") echo "❌ Invalid selection" ;;
-        "api_key_hidden") echo "🔒 For security, the API key will not be shown while typing" ;;
-        "react_detected") echo "🔍 React project automatically detected" ;;
-        "vue_detected") echo "🔍 Vue.js project automatically detected" ;;
-        "angular_detected") echo "🔍 Angular project automatically detected" ;;
-        "express_detected") echo "🔍 Express.js project automatically detected" ;;
-        "node_detected") echo "🔍 Node.js project automatically detected" ;;
-        "rails_detected") echo "🔍 Ruby on Rails project automatically detected" ;;
-        "laravel_detected") echo "🔍 Laravel project automatically detected" ;;
-        "flask_detected") echo "🔍 Flask project automatically detected" ;;
-        "django_detected") echo "🔍 Django project automatically detected" ;;
-        "spring_detected") echo "🔍 Spring Boot project automatically detected" ;;
-        "flutter_detected") echo "🔍 Flutter project automatically detected" ;;
-        "error_write_dir") echo "❌ Error: Cannot write to directory" ;;
-        "error_generate_guide") echo "❌ Error generating project guide." ;;
-        "validating_api_config") echo "🔍 Validating API configuration..." ;;
-        "unknown_error") echo "Unknown error" ;;
-        "config_error") echo "❌ Configuration Error" ;;
-        "test_error") echo "❌ Test error" ;;
+        "lines") echo "lines" ;;
+        "creating_new_milestone") echo "📝 Creating new conversation milestone" ;;
+        "next_conversation_new_milestone") echo "✅ Next conversation will be a new milestone" ;;
+        "you") echo "You" ;;
+        "assistant") echo "Assistant" ;;
+        "thinking") echo "Thinking" ;;
+        "exiting_interactive") echo "👋 Exiting interactive mode." ;;
+        "project_type_not_detected_manual") echo "❓ Could not automatically detect project type." ;;
+        "select_project_type") echo "Select project type:" ;;
+        "other") echo "Other" ;;
+        "enter_project_type_number") echo "Enter the project type number" ;;
+        "invalid_option_selecting_other") echo "⚠️ Invalid option. Selecting 'Other' by default." ;;
+        "generating_project_context") echo "Generating project context" ;;
+        "project_directory") echo "Project directory" ;;
+        "directories_to_analyze") echo "Directories to analyze" ;;
+        "output_file") echo "Output file" ;;
+        "warning_no_files_found") echo "⚠️ Warning: No files found to process" ;;
+        "context_file_generated_successfully") echo "✅ Context file generated successfully" ;;
+        "location") echo "Location" ;;
+        "initializing_project_with_asis") echo "🚀 Initializing project with Asis-coder" ;;
+        "creating_project_guide") echo "📋 Creating project guide" ;;
+        "project_initialized_correctly") echo "✅ Project initialized correctly" ;;
+        "suggestion_git_commit") echo "💡 Suggestion: Run 'git add CODER.md && git commit -m \"Add Coder project guide\"'" ;;
+        "generating_project_guide") echo "Generating project guide" ;;
+        "coder_md_file_created") echo "✅ CODER.md file created with project guide" ;;
+        "context_file_not_found") echo "❌ Context file not found. Run 'coder -context' first" ;;
+        "chatgpt_models_available") echo "🤖 AVAILABLE CHATGPT MODELS" ;;
+        "classic_models") echo "📊 Classic Models" ;;
+        "classic_fast_economic") echo "Classic, fast and economic" ;;
+        "gpt4_base_model") echo "GPT-4 base model" ;;
+        "price_performance_balance") echo "Price/performance balance" ;;
+        "omni_models") echo "🚀 Omni Models" ;;
+        "multimodal") echo "Multimodal" ;;
+        "omni_multimodal_powerful") echo "Omni - Powerful multimodal" ;;
+        "economic_and_fast") echo "Economic and fast" ;;
+        "reasoning_models") echo "🧠 Reasoning Models" ;;
+        "advanced_reasoning") echo "Advanced reasoning" ;;
+        "fast_reasoning") echo "Fast reasoning" ;;
+        "reasoning_preview") echo "Reasoning preview" ;;
+        "new_reasoning_model") echo "New reasoning model" ;;
+        "latest_compact_model") echo "Latest compact model" ;;
+        "new_generation") echo "🆕 New Generation" ;;
+        "new_generation_model") echo "New generation" ;;
+        "compact_new_generation") echo "Compact new generation" ;;
+        "ultra_compact") echo "Ultra compact" ;;
+        "most_advanced_model") echo "Most advanced model" ;;
+        "select_model_number") echo "Select the model number" ;;
+        "invalid_option_default_gpt4o_mini") echo "⚠️ Invalid option. Selecting gpt-4o-mini by default." ;;
+        "claude_models_available") echo "🎭 AVAILABLE CLAUDE MODELS" ;;
+        "claude_4_latest_generation") echo "👑 Claude 4 (Latest Generation)" ;;
+        "claude_4_most_powerful") echo "Claude 4 - Most powerful and intelligent" ;;
+        "claude_4_high_performance") echo "Claude 4 - High performance" ;;
+        "claude_37_extended_thinking") echo "🧠 Claude 3.7 (Extended Thinking)" ;;
+        "claude_37_extended_thinking_desc") echo "Claude 3.7 - Extended thinking" ;;
+        "claude_35_perfect_balance") echo "⚡ Claude 3.5 (Perfect Balance)" ;;
+        "claude_35_v2_most_recent") echo "Claude 3.5 v2 - Most recent" ;;
+        "claude_35_v1_stable") echo "Claude 3.5 v1 - Stable" ;;
+        "fast_and_economic") echo "Fast and economic" ;;
+        "claude_3_legacy") echo "📚 Claude 3 Legacy" ;;
+        "smartest_legacy") echo "Smartest legacy" ;;
+        "ultrafast_legacy") echo "Ultrafast legacy" ;;
+        "invalid_option_default_claude") echo "⚠️ Invalid option. Selecting claude-3-5-sonnet-20241022 by default." ;;
+        "gemini_models_available") echo "💎 AVAILABLE GEMINI MODELS" ;;
+        "gemini_25_most_recent") echo "🚀 Gemini 2.5 (Most Recent)" ;;
+        "most_powerful_with_thinking") echo "Most powerful with thinking" ;;
+        "best_price_performance_balance") echo "Best price/performance balance" ;;
+        "ultra_economic") echo "Ultra economic" ;;
+        "gemini_20") echo "⚡ Gemini 2.0" ;;
+        "generation_20_standard") echo "Generation 2.0 standard" ;;
+        "generation_20_economic") echo "Generation 2.0 economic" ;;
+        "gemini_15_legacy") echo "📚 Gemini 1.5 Legacy" ;;
+        "legacy_pro") echo "Legacy Pro" ;;
+        "legacy_flash") echo "Legacy Flash" ;;
+        "legacy_compact") echo "Legacy compact" ;;
+        "invalid_option_default_gemini") echo "⚠️ Invalid option. Selecting gemini-2.5-flash by default." ;;
+        "query_received_in_llm") echo "Query received in consultar_llm" ;;
+        "getting_api_config") echo "Getting API configuration" ;;
+        "coder_cli_version") echo "Coder CLI version" ;;
+        "current_config") echo "Current configuration" ;;
+        "request_sent_to") echo "Request sent to" ;;
+        "response_received") echo "Response received" ;;
+        "error_extract_content") echo "Error: Could not extract content from response" ;;
+        "complete_response") echo "Complete response" ;;
+        "debug_prompt_configured") echo "DEBUG: Initial prompt configured" ;;
+        "debug_history_file") echo "DEBUG: History file" ;;
+        "debug_complete_prompt_sent") echo "DEBUG: Complete prompt sent to LLM" ;;
+        "debug_sending_request") echo "DEBUG: Sending request to LLM" ;;
+        "debug_response_received") echo "DEBUG: Response received from LLM" ;;
+        "debug_history_updated_saved") echo "DEBUG: History updated and saved in" ;;
+        "creating_new_milestone") echo "📝 Creating new conversation milestone" ;;
+        "next_conversation_new_milestone") echo "✅ Next conversation will be a new milestone" ;;
+        "lines") echo "lines" ;;
+        "verifying_api") echo "⏳ Verifying API of" ;;
+        "chatgpt_api_valid") echo "✅ ChatGPT API is valid" ;;
+        "chatgpt_insufficient_credits") echo "❌ ChatGPT: Insufficient credits" ;;
+        "visit_openai_billing") echo "💡 Go to platform.openai.com/account/billing" ;;
+        "chatgpt_invalid_api_key") echo "❌ ChatGPT: Invalid API key" ;;
+        "verify_openai_key") echo "💡 Verify your API key at platform.openai.com" ;;
+        "claude_api_valid") echo "✅ Claude API is valid" ;;
+        "claude_insufficient_credits") echo "❌ Claude: Insufficient credits" ;;
+        "visit_anthropic_billing") echo "💡 Go to console.anthropic.com/settings/billing" ;;
+        "claude_invalid_api_key") echo "❌ Claude: Invalid API key" ;;
+        "verify_anthropic_key") echo "💡 Verify your API key at console.anthropic.com" ;;
+        "gemini_api_valid") echo "✅ Gemini API is valid" ;;
+        "gemini_quota_exceeded") echo "❌ Gemini: Quota exceeded" ;;
+        "visit_google_quota") echo "💡 Go to console.cloud.google.com/apis/api/generativelanguage.googleapis.com" ;;
+        "gemini_invalid_api_key") echo "❌ Gemini: Invalid API key" ;;
+        "verify_google_key") echo "💡 Verify your API key at aistudio.google.com/app/apikey" ;;
+        "no_api_key_configured") echo "❌ No API key configured for" ;;
+        "no_llm_configured") echo "❌ No LLM configured" ;;
+        "config_file_not_found") echo "❌ Configuration file not found" ;;
+        "config_required_before_continue") echo "🔧 Configuration required before continuing" ;;
+        "available_options") echo "Available options:" ;;
+        "configure_from_scratch") echo "Configure from scratch" ;;
+        "change_llm") echo "Change LLM" ;;
+        "test_apis") echo "Test APIs" ;;
+        "configuration_test") echo "🧪 CONFIGURATION TEST" ;;
+        "testing_llm") echo "🤖 Testing" ;;
+        "with_model") echo "with model" ;;
+        "default") echo "default" ;;
+        "test_query") echo "Answer briefly: Are you working correctly?" ;;
+        "test_query_label") echo "Test query" ;;
+        "sending_query") echo "⏳ Sending query" ;;
+        "test_successful") echo "✅ Test successful!" ;;
+        "response") echo "Response" ;;
+        "config_working_correctly") echo "🎉 Your configuration is working correctly" ;;
+        "asis_coder_configuration") echo "⚙️ ASIS-CODER CONFIGURATION" ;;
+        "llm_configuration") echo "🤖 LLM Configuration" ;;
+        "api_configured") echo "API configured" ;;
+        "active") echo "ACTIVE" ;;
+        "change_active_llm") echo "Change active LLM" ;;
+        "configure_new_api_key") echo "Configure new API key" ;;
+        "change_model") echo "Change model" ;;
+        "test_configuration") echo "Test configuration" ;;
+        "exit") echo "Exit" ;;
+        "select_option") echo "Select an option" ;;
+        "exiting_configuration") echo "Exiting configuration" ;;
+        "run_setup") echo "Run" ;;
+        "for_initial_config") echo "for initial configuration" ;;
         *) echo "$key" ;;
     esac
 }
@@ -356,7 +476,6 @@ get_text_es() {
         "available_histories") echo "📚 Historiales de conversación disponibles:" ;;
         "select_history") echo "Selecciona un historial para ver (o 'q' para salir):" ;;
         "invalid_selection") echo "❌ Selección inválida" ;;
-        "api_key_hidden") echo "🔒 Por seguridad, la API key no se mostrará mientras escribes" ;;
         "react_detected") echo "🔍 Proyecto React detectado automáticamente" ;;
         "vue_detected") echo "🔍 Proyecto Vue.js detectado automáticamente" ;;
         "angular_detected") echo "🔍 Proyecto Angular detectado automáticamente" ;;
@@ -374,6 +493,172 @@ get_text_es() {
         "unknown_error") echo "Error desconocido" ;;
         "config_error") echo "❌ Error de Configuración" ;;
         "test_error") echo "❌ Error en la prueba" ;;
+        "dependencies_verified") echo "Dependencias verificadas" ;;
+        "missing_dependency") echo "Dependencia faltante" ;;
+        "current_project") echo "📁 Proyecto Actual" ;;
+        "type_detected") echo "Tipo detectado" ;;
+        "project_type_not_detected") echo "Tipo de proyecto no detectado" ;;
+        "context_not_generated") echo "Contexto no generado" ;;
+        "configure_llm") echo "Configura tu LLM" ;;
+        "initialize_project") echo "Inicializa proyecto" ;;
+        "global_install_available") echo "🚀 Instalación Global Disponible" ;;
+        "currently_using_npx") echo "Actualmente estás usando npx para ejecutar asis-coder." ;;
+        "would_you_like_global") echo "¿Te gustaría instalarlo globalmente para usar comandos más cortos?" ;;
+        "with_global_install") echo "Con instalación global podrás usar:" ;;
+        "initial_configuration") echo "Configuración inicial" ;;
+        "install_globally_question") echo "¿Quieres instalar asis-coder globalmente? (y/n)" ;;
+        "installing_globally") echo "📦 Instalando globalmente..." ;;
+        "installed_successfully") echo "✅ ¡Asis-coder instalado globalmente exitosamente!" ;;
+        "now_you_can_use") echo "🎉 Ahora puedes usar comandos cortos:" ;;
+        "press_enter_continue") echo "Presiona Enter para continuar con la configuración..." ;;
+        "could_not_install") echo "⚠️ No se pudo instalar globalmente. Continuando con npx..." ;;
+        "ok_continue_npx") echo "💡 Está bien, puedes seguir usando npx cuando quieras." ;;
+        "initial_setup_title") echo "🔧 Configuración Inicial de Asis-coder" ;;
+        "step_1_dependencies") echo "📋 Paso 1: Verificando dependencias..." ;;
+        "step_2_llm") echo "🤖 Paso 2: Configurando LLM..." ;;
+        "step_3_project") echo "📁 Paso 3: Configuración del proyecto" ;;
+        "initialize_project_question") echo "¿Quieres inicializar este proyecto con Asis-coder? (y/n)" ;;
+        "setup_completed") echo "🎉 ¡Configuración completada exitosamente!" ;;
+        "useful_commands") echo "💡 Comandos útiles para empezar:" ;;
+        "interactive_chat_mode") echo "Modo chat interactivo" ;;
+        "regenerate_context") echo "Regenerar contexto del proyecto" ;;
+        "change_ai_model") echo "Cambiar modelo de IA" ;;
+        "project_type_not_detected_manual") echo "❓ No se pudo detectar el tipo de proyecto automáticamente." ;;
+        "select_project_type") echo "Selecciona el tipo de proyecto:" ;;
+        "other") echo "Otro" ;;
+        "enter_project_type_number") echo "Ingresa el número del tipo de proyecto" ;;
+        "invalid_option_selecting_other") echo "⚠️ Opción no válida. Seleccionando 'Otro' por defecto." ;;
+        "generating_project_context") echo "Generando contexto del proyecto" ;;
+        "project_directory") echo "Directorio del proyecto" ;;
+        "directories_to_analyze") echo "Directorios a analizar" ;;
+        "output_file") echo "Archivo de salida" ;;
+        "warning_no_files_found") echo "⚠️ Advertencia: No se encontraron archivos para procesar" ;;
+        "context_file_generated_successfully") echo "✅ Archivo de contexto generado exitosamente" ;;
+        "location") echo "Ubicación" ;;
+        "initializing_project_with_asis") echo "🚀 Inicializando proyecto con Asis-coder" ;;
+        "creating_project_guide") echo "📋 Creando guía del proyecto" ;;
+        "project_initialized_correctly") echo "✅ Proyecto inicializado correctamente" ;;
+        "suggestion_git_commit") echo "💡 Sugerencia: Ejecuta 'git add CODER.md && git commit -m \"Add Coder project guide\"'" ;;
+        "generating_project_guide") echo "Generando guía del proyecto" ;;
+        "coder_md_file_created") echo "✅ Archivo CODER.md creado con la guía del proyecto" ;;
+        "context_file_not_found") echo "❌ No se encontró archivo de contexto. Ejecuta 'coder -contexto' primero" ;;
+        "chatgpt_models_available") echo "🤖 MODELOS DE CHATGPT DISPONIBLES" ;;
+        "classic_models") echo "📊 Modelos Clásicos" ;;
+        "classic_fast_economic") echo "Clásico, rápido y económico" ;;
+        "gpt4_base_model") echo "Modelo base GPT-4" ;;
+        "price_performance_balance") echo "Equilibrio precio/rendimiento" ;;
+        "omni_models") echo "🚀 Modelos Omni" ;;
+        "multimodal") echo "Multimodal" ;;
+        "omni_multimodal_powerful") echo "Omni - Multimodal potente" ;;
+        "economic_and_fast") echo "Económico y rápido" ;;
+        "reasoning_models") echo "🧠 Modelos de Razonamiento" ;;
+        "advanced_reasoning") echo "Razonamiento avanzado" ;;
+        "fast_reasoning") echo "Razonamiento rápido" ;;
+        "reasoning_preview") echo "Vista previa de razonamiento" ;;
+        "new_reasoning_model") echo "Nuevo modelo de razonamiento" ;;
+        "latest_compact_model") echo "Último modelo compacto" ;;
+        "new_generation") echo "🆕 Nueva Generación" ;;
+        "new_generation_model") echo "Nueva generación" ;;
+        "compact_new_generation") echo "Compacto nueva generación" ;;
+        "ultra_compact") echo "Ultra compacto" ;;
+        "most_advanced_model") echo "Modelo más avanzado" ;;
+        "select_model_number") echo "Selecciona el número del modelo" ;;
+        "invalid_option_default_gpt4o_mini") echo "⚠️ Opción no válida. Seleccionando gpt-4o-mini por defecto." ;;
+        "claude_models_available") echo "🎭 MODELOS DE CLAUDE DISPONIBLES" ;;
+        "claude_4_latest_generation") echo "👑 Claude 4 (Última Generación)" ;;
+        "claude_4_most_powerful") echo "Claude 4 - Más potente e inteligente" ;;
+        "claude_4_high_performance") echo "Claude 4 - Alto rendimiento" ;;
+        "claude_37_extended_thinking") echo "🧠 Claude 3.7 (Pensamiento Extendido)" ;;
+        "claude_37_extended_thinking_desc") echo "Claude 3.7 - Pensamiento extendido" ;;
+        "claude_35_perfect_balance") echo "⚡ Claude 3.5 (Equilibrio Perfecto)" ;;
+        "claude_35_v2_most_recent") echo "Claude 3.5 v2 - Más reciente" ;;
+        "claude_35_v1_stable") echo "Claude 3.5 v1 - Estable" ;;
+        "fast_and_economic") echo "Rápido y económico" ;;
+        "claude_3_legacy") echo "📚 Claude 3 Legacy" ;;
+        "smartest_legacy") echo "Más inteligente legacy" ;;
+        "ultrafast_legacy") echo "Ultrarrápido legacy" ;;
+        "invalid_option_default_claude") echo "⚠️ Opción no válida. Seleccionando claude-3-5-sonnet-20241022 por defecto." ;;
+        "gemini_models_available") echo "💎 MODELOS DE GEMINI DISPONIBLES" ;;
+        "gemini_25_most_recent") echo "🚀 Gemini 2.5 (Más Reciente)" ;;
+        "most_powerful_with_thinking") echo "Más potente con pensamiento" ;;
+        "best_price_performance_balance") echo "Mejor equilibrio precio/rendimiento" ;;
+        "ultra_economic") echo "Ultra económico" ;;
+        "gemini_20") echo "⚡ Gemini 2.0" ;;
+        "generation_20_standard") echo "Generación 2.0 estándar" ;;
+        "generation_20_economic") echo "Generación 2.0 económico" ;;
+        "gemini_15_legacy") echo "📚 Gemini 1.5 Legacy" ;;
+        "legacy_pro") echo "Legacy Pro" ;;
+        "legacy_flash") echo "Legacy Flash" ;;
+        "legacy_compact") echo "Legacy compacto" ;;
+        "invalid_option_default_gemini") echo "⚠️ Opción no válida. Seleccionando gemini-2.5-flash por defecto." ;;
+        "query_received_in_llm") echo "Consulta recibida en consultar_llm" ;;
+        "getting_api_config") echo "Obteniendo configuración de API" ;;
+        "coder_cli_version") echo "Coder CLI versión" ;;
+        "current_config") echo "Configuración actual" ;;
+        "request_sent_to") echo "Petición enviada a" ;;
+        "response_received") echo "Respuesta recibida" ;;
+        "error_extract_content") echo "Error: No se pudo extraer el contenido de la respuesta" ;;
+        "complete_response") echo "Respuesta completa" ;;
+        "debug_prompt_configured") echo "DEBUG: Prompt inicial configurado" ;;
+        "debug_history_file") echo "DEBUG: Archivo de historial" ;;
+        "debug_complete_prompt_sent") echo "DEBUG: Prompt completo enviado al LLM" ;;
+        "debug_sending_request") echo "DEBUG: Enviando petición al LLM" ;;
+        "debug_response_received") echo "DEBUG: Respuesta recibida del LLM" ;;
+        "debug_history_updated_saved") echo "DEBUG: Historial actualizado y guardado en" ;;
+        "creating_new_milestone") echo "📝 Creando nuevo hito de conversación" ;;
+        "next_conversation_new_milestone") echo "✅ Próxima conversación será un nuevo hito" ;;
+        "lines") echo "líneas" ;;
+        "verifying_api") echo "⏳ Verificando API de" ;;
+        "chatgpt_api_valid") echo "✅ API de ChatGPT válida" ;;
+        "chatgpt_insufficient_credits") echo "❌ ChatGPT: Sin créditos suficientes" ;;
+        "visit_openai_billing") echo "💡 Ve a platform.openai.com/account/billing" ;;
+        "chatgpt_invalid_api_key") echo "❌ ChatGPT: API key inválida" ;;
+        "verify_openai_key") echo "💡 Verifica tu API key en platform.openai.com" ;;
+        "claude_api_valid") echo "✅ API de Claude válida" ;;
+        "claude_insufficient_credits") echo "❌ Claude: Sin créditos suficientes" ;;
+        "visit_anthropic_billing") echo "💡 Ve a console.anthropic.com/settings/billing" ;;
+        "claude_invalid_api_key") echo "❌ Claude: API key inválida" ;;
+        "verify_anthropic_key") echo "💡 Verifica tu API key en console.anthropic.com" ;;
+        "gemini_api_valid") echo "✅ API de Gemini válida" ;;
+        "gemini_quota_exceeded") echo "❌ Gemini: Cuota excedida" ;;
+        "visit_google_quota") echo "💡 Ve a console.cloud.google.com/apis/api/generativelanguage.googleapis.com" ;;
+        "gemini_invalid_api_key") echo "❌ Gemini: API key inválida" ;;
+        "verify_google_key") echo "💡 Verifica tu API key en aistudio.google.com/app/apikey" ;;
+        "no_api_key_configured") echo "❌ No hay API key configurada para" ;;
+        "no_llm_configured") echo "❌ No hay LLM configurado" ;;
+        "config_file_not_found") echo "❌ No se encontró archivo de configuración" ;;
+        "config_required_before_continue") echo "🔧 Se requiere configuración antes de continuar" ;;
+        "available_options") echo "Opciones disponibles:" ;;
+        "configure_from_scratch") echo "Configurar desde cero" ;;
+        "change_llm") echo "Cambiar LLM" ;;
+        "test_apis") echo "Probar APIs" ;;
+        "configuration_test") echo "🧪 PRUEBA DE CONFIGURACIÓN" ;;
+        "testing_llm") echo "🤖 Probando" ;;
+        "with_model") echo "con modelo" ;;
+        "default") echo "por defecto" ;;
+        "test_query") echo "Responde brevemente: ¿Estás funcionando correctamente?" ;;
+        "test_query_label") echo "Consulta de prueba" ;;
+        "sending_query") echo "⏳ Enviando consulta" ;;
+        "test_successful") echo "✅ ¡Prueba exitosa!" ;;
+        "response") echo "Respuesta" ;;
+        "config_working_correctly") echo "🎉 Tu configuración está funcionando correctamente" ;;
+        "asis_coder_configuration") echo "⚙️ CONFIGURACIÓN DE ASIS-CODER" ;;
+        "llm_configuration") echo "🤖 Configuración de LLMs" ;;
+        "api_configured") echo "API configurada" ;;
+        "active") echo "ACTIVO" ;;
+        "change_active_llm") echo "Cambiar LLM activo" ;;
+        "configure_new_api_key") echo "Configurar nueva API key" ;;
+        "change_model") echo "Cambiar modelo" ;;
+        "test_configuration") echo "Probar configuración" ;;
+        "exit") echo "Salir" ;;
+        "select_option") echo "Selecciona una opción" ;;
+        "exiting_configuration") echo "Saliendo de la configuración" ;;
+        "run_setup") echo "Ejecuta" ;;
+        "for_initial_config") echo "para configurar inicial" ;;
+        "you") echo "Tú" ;;
+        "assistant") echo "Asistente" ;;
+        "thinking") echo "Pensando" ;;
+        "exiting_interactive") echo "👋 Saliendo del modo interactivo." ;;
         *) echo "$key" ;;
     esac
 }
@@ -491,58 +776,61 @@ mostrar_estado_configuracion() {
     local DIM='\033[2m'
     local NC='\033[0m'
     
+    # Cargar idioma
+    load_language
+    
     clear
-    echo -e "${CYAN}${BOLD}⚙️  CONFIGURACIÓN DE ASIS-CODER${NC}"
+    echo -e "${CYAN}${BOLD}⚙️  $(get_text "asis_coder_configuration")${NC}"
     echo -e "${DIM}════════════════════════════════════════════════════════════════${NC}"
     echo ""
     
     if [ -f "$CONFIG_FILE" ]; then
         source "$CONFIG_FILE" 2>/dev/null || true
         
-        echo -e "${YELLOW}${BOLD}🤖 Configuración de LLMs:${NC}"
+        echo -e "${YELLOW}${BOLD}🤖 $(get_text "llm_configuration"):${NC}"
         echo -e "${DIM}────────────────────────────────────────────────────────────────${NC}"
         
         # ChatGPT
         if [ -n "$chatgpt_api_key" ]; then
-            echo -e "   ${GREEN}✓${NC} ChatGPT: API configurada"
+            echo -e "   ${GREEN}✓${NC} ChatGPT: $(get_text "api_configured")"
             if [ "$llm_choice" == "chatgpt" ]; then
-                echo -e "     ${BOLD}→ ACTIVO${NC} (Modelo: ${model:-gpt-4o-mini})"
+                echo -e "     ${BOLD}→ $(get_text "active")${NC} ($(get_text "model"): ${model:-gpt-4o-mini})"
             fi
         else
-            echo -e "   ${RED}✗${NC} ChatGPT: No configurado"
+            echo -e "   ${RED}✗${NC} ChatGPT: $(get_text "not_configured")"
         fi
         
         # Claude
         if [ -n "$claude_api_key" ]; then
-            echo -e "   ${GREEN}✓${NC} Claude: API configurada"
+            echo -e "   ${GREEN}✓${NC} Claude: $(get_text "api_configured")"
             if [ "$llm_choice" == "claude" ]; then
-                echo -e "     ${BOLD}→ ACTIVO${NC} (Modelo: ${model:-claude-3-5-sonnet-20241022})"
+                echo -e "     ${BOLD}→ $(get_text "active")${NC} ($(get_text "model"): ${model:-claude-3-5-sonnet-20241022})"
             fi
         else
-            echo -e "   ${RED}✗${NC} Claude: No configurado"
+            echo -e "   ${RED}✗${NC} Claude: $(get_text "not_configured")"
         fi
         
         # Gemini
         if [ -n "$gemini_api_key" ]; then
-            echo -e "   ${GREEN}✓${NC} Gemini: API configurada"
+            echo -e "   ${GREEN}✓${NC} Gemini: $(get_text "api_configured")"
             if [ "$llm_choice" == "gemini" ]; then
-                echo -e "     ${BOLD}→ ACTIVO${NC} (Modelo: ${model:-gemini-2.5-flash})"
+                echo -e "     ${BOLD}→ $(get_text "active")${NC} ($(get_text "model"): ${model:-gemini-2.5-flash})"
             fi
         else
-            echo -e "   ${RED}✗${NC} Gemini: No configurado"
+            echo -e "   ${RED}✗${NC} Gemini: $(get_text "not_configured")"
         fi
         
         echo ""
-        echo -e "${YELLOW}${BOLD}📋 Opciones disponibles:${NC}"
+        echo -e "${YELLOW}${BOLD}📋 $(get_text "available_options"):${NC}"
         echo -e "${DIM}────────────────────────────────────────────────────────────────${NC}"
-        echo -e "   ${CYAN}1.${NC} Cambiar LLM activo"
-        echo -e "   ${CYAN}2.${NC} Configurar nueva API key"
-        echo -e "   ${CYAN}3.${NC} Cambiar modelo"
-        echo -e "   ${CYAN}4.${NC} Probar configuración"
-        echo -e "   ${CYAN}5.${NC} Salir"
+        echo -e "   ${CYAN}1.${NC} $(get_text "change_active_llm")"
+        echo -e "   ${CYAN}2.${NC} $(get_text "configure_new_api_key")"
+        echo -e "   ${CYAN}3.${NC} $(get_text "change_model")"
+        echo -e "   ${CYAN}4.${NC} $(get_text "test_configuration")"
+        echo -e "   ${CYAN}5.${NC} $(get_text "exit")"
         
         echo ""
-        read -p "$(echo -e "${YELLOW}Selecciona una opción (1-5): ${NC}")" config_option
+        read -p "$(echo -e "${YELLOW}$(get_text "select_option") (1-5): ${NC}")" config_option
         
         case $config_option in
             1)
@@ -561,15 +849,15 @@ mostrar_estado_configuracion() {
                 probar_configuracion_api
                 ;;
             5)
-                echo "Saliendo de la configuración."
+                echo "$(get_text "exiting_configuration")."
                 ;;
             *)
-                echo "Opción no válida."
+                echo "$(get_text "invalid_option")."
                 ;;
         esac
     else
-        echo -e "${RED}❌ No se encontró archivo de configuración${NC}"
-        echo -e "${YELLOW}💡 Ejecuta: ${CYAN}coder setup${NC} para configurar inicial"
+        echo -e "${RED}❌ $(get_text "config_file_not_found")${NC}"
+        echo -e "${YELLOW}💡 $(get_text "run_setup"): ${CYAN}coder setup${NC} $(get_text "for_initial_config")"
     fi
 }
 

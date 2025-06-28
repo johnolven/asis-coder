@@ -175,34 +175,36 @@ mostrar_ui_bienvenida() {
     # Banner de bienvenida
     echo -e "${CYAN}${BOLD}"
     echo "    ╔═══════════════════════════════════════════════════════════════╗"
-    echo "    ║                    $(get_text "welcome_title")                        ║"
     echo "    ║                                                               ║"
-    echo "    ║              $(get_text "welcome_subtitle")               ║"
+    echo "    ║     █████╗ ███████╗██╗███████╗       ██████╗ ██████╗ ██████╗ ███████╗██████╗  "
+    echo "    ║    ██╔══██╗██╔════╝██║██╔════╝      ██╔════╝██╔═══██╗██╔══██╗██╔════╝██╔══██╗ "
+    echo "    ║    ███████║███████╗██║███████╗█████╗██║     ██║   ██║██║  ██║█████╗  ██████╔╝ "
+    echo "    ║    ██╔══██║╚════██║██║╚════██║╚════╝██║     ██║   ██║██║  ██║██╔══╝  ██╔══██╗ "
+    echo "    ║    ██║  ██║███████║██║███████║      ╚██████╗╚██████╔╝██████╔╝███████╗██║  ██║ "
+    echo "    ║    ╚═╝  ╚═╝╚══════╝╚═╝╚══════╝       ╚═════╝ ╚═════╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝ "
     echo "    ║                                                               ║"
-    echo "    ║    $(get_text "welcome_desc")          ║"
-    echo "    ║                                        ║"
-    echo "    ║                                                               ║"
+    echo "    ║           $(get_text "ai_assistant")                 ║"
+    echo "    ║                 $(get_text "powered_by")                         ║"
     echo "    ╚═══════════════════════════════════════════════════════════════╝"
     echo -e "${NC}"
-    echo ""
     
     # Información del sistema
-    echo -e "${BLUE}${BOLD}🔍 Estado del Sistema${NC}"
+    echo -e "${BLUE}${BOLD}$(get_text "system_status")${NC}"
     echo -e "${DIM}────────────────────────────────────────────────────────────────${NC}"
     
     # Verificar configuración
     if [ -f "$CONFIG_FILE" ]; then
         source "$CONFIG_FILE" 2>/dev/null || true
         if [ -n "$llm_choice" ]; then
-            echo -e "   ${GREEN}✓${NC} LLM configurado: ${BOLD}$llm_choice${NC}"
+            echo -e "   ${GREEN}✓${NC} $(get_text "llm_configured"): ${BOLD}$llm_choice${NC}"
             if [ -n "$model" ]; then
-                echo -e "   ${GREEN}✓${NC} Modelo: ${BOLD}$model${NC}"
+                echo -e "   ${GREEN}✓${NC} $(get_text "model"): ${BOLD}$model${NC}"
             fi
         else
-            echo -e "   ${YELLOW}⚠${NC} LLM no configurado"
+            echo -e "   ${YELLOW}⚠${NC} $(get_text "llm_not_configured")"
         fi
     else
-        echo -e "   ${RED}✗${NC} Configuración no encontrada"
+        echo -e "   ${RED}✗${NC} $(get_text "config_not_found")"
     fi
     
     # Verificar dependencias
@@ -210,61 +212,61 @@ mostrar_ui_bienvenida() {
     for cmd in curl jq; do
         if ! command -v "$cmd" >/dev/null 2>&1; then
             deps_ok=false
-            echo -e "   ${RED}✗${NC} Dependencia faltante: $cmd"
+            echo -e "   ${RED}✗${NC} $(get_text "missing_dependency"): $cmd"
         fi
     done
     
     if $deps_ok; then
-        echo -e "   ${GREEN}✓${NC} Dependencias verificadas"
+        echo -e "   ${GREEN}✓${NC} $(get_text "dependencies_verified")"
     fi
     
     # Detectar proyecto actual
     echo ""
-    echo -e "${PURPLE}${BOLD}📁 Proyecto Actual${NC}"
+    echo -e "${PURPLE}${BOLD}$(get_text "current_project")${NC}"
     echo -e "${DIM}────────────────────────────────────────────────────────────────${NC}"
     
     local proyecto_detectado=$(detectar_proyecto_actual)
     if [ -n "$proyecto_detectado" ]; then
-        echo -e "   ${GREEN}✓${NC} Tipo detectado: ${BOLD}$proyecto_detectado${NC}"
+        echo -e "   ${GREEN}✓${NC} $(get_text "type_detected"): ${BOLD}$proyecto_detectado${NC}"
     else
-        echo -e "   ${YELLOW}⚠${NC} Tipo de proyecto no detectado"
+        echo -e "   ${YELLOW}⚠${NC} $(get_text "project_type_not_detected")"
     fi
     
     local contexto_existe=$(encontrar_archivo_contexto)
     if [ -n "$contexto_existe" ]; then
-        echo -e "   ${GREEN}✓${NC} Contexto disponible: ${DIM}$(basename "$contexto_existe")${NC}"
+        echo -e "   ${GREEN}✓${NC} $(get_text "context_available"): ${DIM}$(basename "$contexto_existe")${NC}"
     else
-        echo -e "   ${YELLOW}⚠${NC} Contexto no generado"
+        echo -e "   ${YELLOW}⚠${NC} $(get_text "context_not_generated")"
     fi
     
     local cmd_prefix=$(get_command_prefix)
     
     echo ""
-    echo -e "${YELLOW}${BOLD}🚀 Primeros Pasos${NC}"
+    echo -e "${YELLOW}${BOLD}$(get_text "first_steps")${NC}"
     echo -e "${DIM}────────────────────────────────────────────────────────────────${NC}"
     
     if [ ! -f "$CONFIG_FILE" ] || [ -z "$llm_choice" ]; then
-        echo -e "   ${BOLD}1.${NC} Configura tu LLM: ${CYAN}${cmd_prefix} setup${NC}"
+        echo -e "   ${BOLD}1.${NC} $(get_text "configure_llm"): ${CYAN}${cmd_prefix} setup${NC}"
     fi
     
     if [ -z "$contexto_existe" ]; then
-        echo -e "   ${BOLD}2.${NC} Genera contexto: ${CYAN}${cmd_prefix} -contexto${NC}"
+        echo -e "   ${BOLD}2.${NC} $(get_text "generate_context"): ${CYAN}${cmd_prefix} -contexto${NC}"
     fi
     
-    echo -e "   ${BOLD}3.${NC} Inicializa proyecto: ${CYAN}${cmd_prefix} /init${NC}"
-    echo -e "   ${BOLD}4.${NC} Modo interactivo: ${CYAN}${cmd_prefix} -i${NC}"
+    echo -e "   ${BOLD}3.${NC} $(get_text "initialize_project"): ${CYAN}${cmd_prefix} /init${NC}"
+    echo -e "   ${BOLD}4.${NC} $(get_text "interactive_mode"): ${CYAN}${cmd_prefix} -i${NC}"
     
     echo ""
-    echo -e "${GREEN}${BOLD}💡 Ejemplos de Uso${NC}"
+    echo -e "${GREEN}${BOLD}$(get_text "usage_examples")${NC}"
     echo -e "${DIM}────────────────────────────────────────────────────────────────${NC}"
-    echo -e "   📝 ${cmd_prefix} \"explica este proyecto\""
-    echo -e "   🔍 ${cmd_prefix} \"encuentra bugs en mi código\""
-    echo -e "   🧪 ${cmd_prefix} \"genera tests para el módulo de auth\""
-    echo -e "   📚 ${cmd_prefix} \"documenta esta función\""
+    echo -e "   📝 ${cmd_prefix} \"$(get_text "explain_project")\""
+    echo -e "   🔍 ${cmd_prefix} \"$(get_text "find_bugs")\""
+    echo -e "   🧪 ${cmd_prefix} \"$(get_text "generate_tests")\""
+    echo -e "   📚 ${cmd_prefix} \"$(get_text "document_function")\""
     
     echo ""
     echo -e "${DIM}────────────────────────────────────────────────────────────────${NC}"
-    echo -e "${DIM}   Presiona cualquier tecla para continuar o Ctrl+C para salir${NC}"
+    echo -e "${DIM}   $(get_text "press_key")${NC}"
     echo -e "${DIM}────────────────────────────────────────────────────────────────${NC}"
 }
 
@@ -290,38 +292,38 @@ ofrecer_instalacion_global() {
         local NC='\033[0m'
         
         echo ""
-        echo -e "${YELLOW}${BOLD}🚀 Instalación Global Disponible${NC}"
+        echo -e "${YELLOW}${BOLD}$(get_text "global_install_available")${NC}"
         echo -e "${DIM}────────────────────────────────────────────────────────────────${NC}"
-        echo -e "Actualmente estás usando ${CYAN}npx${NC} para ejecutar asis-coder."
-        echo -e "¿Te gustaría instalarlo globalmente para usar comandos más cortos?"
+        echo -e "$(get_text "currently_using_npx")"
+        echo -e "$(get_text "would_you_like_global")"
         echo ""
-        echo -e "${GREEN}Con instalación global podrás usar:${NC}"
-           echo -e "   ${CYAN}coder setup${NC}      en lugar de  ${DIM}npx asis-coder setup${NC}"
-   echo -e "   ${CYAN}coder -i${NC}         en lugar de  ${DIM}npx asis-coder -i${NC}"
-   echo -e "   ${CYAN}coder \"pregunta\"${NC} en lugar de  ${DIM}npx asis-coder \"pregunta\"${NC}"
+        echo -e "${GREEN}$(get_text "with_global_install")${NC}"
+                   echo -e "   ${CYAN}coder setup${NC}      # $(get_text "initial_configuration")"
+        echo -e "   ${CYAN}coder -i${NC}         # $(get_text "interactive_mode")"
+        echo -e "   ${CYAN}coder \"pregunta\"${NC} # $(get_text "direct_query")"
         echo ""
-        echo -e "¿Quieres instalar asis-coder globalmente? (y/n)"
+        echo -e "$(get_text "install_globally_question")"
         read -p "$(echo -e "${CYAN}> ${NC}")" install_choice
         
         if [[ "$install_choice" == "y" || "$install_choice" == "Y" ]]; then
             echo ""
-            echo -e "${YELLOW}📦 Instalando globalmente...${NC}"
+            echo -e "${YELLOW}$(get_text "installing_globally")${NC}"
             if npm install -g asis-coder; then
-                echo -e "${GREEN}✅ ¡Asis-coder instalado globalmente exitosamente!${NC}"
+                echo -e "${GREEN}$(get_text "installed_successfully")${NC}"
                 echo ""
-                echo -e "${BLUE}${BOLD}🎉 Ahora puedes usar comandos cortos:${NC}"
+                echo -e "${BLUE}${BOLD}$(get_text "now_you_can_use")${NC}"
                 echo -e "   ${CYAN}coder setup${NC}"
                 echo -e "   ${CYAN}coder -i${NC}"
                 echo -e "   ${CYAN}coder \"tu pregunta\"${NC}"
                 echo ""
-                echo -e "${DIM}Presiona Enter para continuar con la configuración...${NC}"
+                echo -e "${DIM}$(get_text "press_enter_continue")${NC}"
                 read
             else
-                echo -e "${YELLOW}⚠️ No se pudo instalar globalmente. Continuando con npx...${NC}"
+                echo -e "${YELLOW}$(get_text "could_not_install")${NC}"
                 echo ""
             fi
         else
-            echo -e "${BLUE}💡 Está bien, puedes seguir usando npx cuando quieras.${NC}"
+            echo -e "${BLUE}$(get_text "ok_continue_npx")${NC}"
             echo ""
         fi
     fi
@@ -343,7 +345,7 @@ configuracion_inicial_completa() {
     local DIM='\033[2m'
     local NC='\033[0m'
     
-    echo -e "${BLUE}${BOLD}🔧 Configuración Inicial de Asis-coder${NC}"
+    echo -e "${BLUE}${BOLD}$(get_text "initial_setup_title")${NC}"
     echo -e "${DIM}═══════════════════════════════════════════════════════════════${NC}"
     echo ""
     
@@ -351,19 +353,19 @@ configuracion_inicial_completa() {
     ofrecer_instalacion_global
     
     # Verificar dependencias
-    echo -e "${YELLOW}📋 Paso 1: Verificando dependencias...${NC}"
+    echo -e "${YELLOW}$(get_text "step_1_dependencies")${NC}"
     check_dependencies
-    echo -e "${GREEN}✅ Dependencias verificadas${NC}"
+    echo -e "${GREEN}✅ $(get_text "dependencies_verified")${NC}"
     echo ""
     
     # Configurar LLM
-    echo -e "${YELLOW}🤖 Paso 2: Configurando LLM...${NC}"
+    echo -e "${YELLOW}$(get_text "step_2_llm")${NC}"
     update_llm_choice
     echo ""
     
     # Configurar proyecto
-    echo -e "${YELLOW}📁 Paso 3: Configuración del proyecto${NC}"
-    echo "¿Quieres inicializar este proyecto con Asis-coder? (y/n)"
+    echo -e "${YELLOW}$(get_text "step_3_project")${NC}"
+    echo "$(get_text "initialize_project_question")"
     read -p "$(echo -e "${CYAN}> ${NC}")" init_choice
     if [[ "$init_choice" == "y" || "$init_choice" == "Y" ]]; then
         echo ""
@@ -371,17 +373,17 @@ configuracion_inicial_completa() {
     fi
     
     echo ""
-    echo -e "${GREEN}${BOLD}🎉 ¡Configuración completada exitosamente!${NC}"
+    echo -e "${GREEN}${BOLD}$(get_text "setup_completed")${NC}"
     local cmd_prefix=$(get_command_prefix)
     
     echo ""
-    echo -e "${BLUE}${BOLD}💡 Comandos útiles para empezar:${NC}"
+    echo -e "${BLUE}${BOLD}$(get_text "useful_commands")${NC}"
     echo -e "${DIM}────────────────────────────────────────────────────────────────${NC}"
-    echo -e "   ${CYAN}${cmd_prefix} -i${NC}               # Modo chat interactivo"
-    echo -e "   ${CYAN}${cmd_prefix} \"pregunta\"${NC}      # Consulta directa"
-    echo -e "   ${CYAN}${cmd_prefix} -contexto${NC}        # Regenerar contexto del proyecto"
-    echo -e "   ${CYAN}${cmd_prefix} /init${NC}            # Inicializar proyecto"
-    echo -e "   ${CYAN}${cmd_prefix} -llm${NC}             # Cambiar modelo de IA"
+    echo -e "   ${CYAN}${cmd_prefix} -i${NC}               # $(get_text "interactive_chat_mode")"
+    echo -e "   ${CYAN}${cmd_prefix} \"pregunta\"${NC}      # $(get_text "direct_query")"
+    echo -e "   ${CYAN}${cmd_prefix} -contexto${NC}        # $(get_text "regenerate_context")"
+    echo -e "   ${CYAN}${cmd_prefix} /init${NC}            # $(get_text "initialize_project")"
+    echo -e "   ${CYAN}${cmd_prefix} -llm${NC}             # $(get_text "change_ai_model")"
     echo ""
-    echo -e "${DIM}¡Ya puedes empezar a usar Asis-coder! 🚀${NC}"
+    echo -e "${DIM}$(get_text "ready_to_use")${NC}"
 } 

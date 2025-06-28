@@ -15,31 +15,18 @@
 - ⚡ **Context Generation**: Automatically includes relevant project files
 - 🎯 **30+ AI Models**: Support for latest models from all providers
 
-## ⚡ Installation Options
+## ⚡ Installation
 
-### 🚀 Option 1: NPX (Recommended)
-```bash
-# Run directly without installing anything
-npx asis-coder setup
-
-```
-
-### 📦 Option 2: Global Installation
 ```bash
 # Install globally to use 'coder' command everywhere
 npm install -g asis-coder
-
-# Then use short commands:
-coder setup
-coder -i
-coder "explain this project"
 ```
 
-### ⚠️ Option 3: Local Installation (Not recommended)
+After installation, you can use the `coder` command from anywhere:
 ```bash
-# Local install still requires npx to run
-npm install asis-coder
-npx asis-coder setup  # Still need npx!
+coder setup              # Initial configuration
+coder -i                 # Interactive mode
+coder "explain this project"  # Direct query
 ```
 
 ## 🖥️ Platform Compatibility
@@ -53,16 +40,8 @@ Requires one of these environments:
 - **WSL** (Windows Subsystem for Linux)
 - **PowerShell** with bash available
 
-**On Windows use:**
-```bash
-npx asis-coder setup    # Initial configuration
-npx asis-coder -i       # Interactive mode
-npx asis-coder "question"  # Direct query
-```
-
 ## 🚀 Quick Start
 
-### With Global Installation:
 1. **Install globally**:
    ```bash
    npm install -g asis-coder
@@ -89,28 +68,6 @@ npx asis-coder "question"  # Direct query
    coder -i  # Start interactive session
    ```
 
-### With NPX (no installation):
-1. **Initial Setup**:
-   ```bash
-   npx asis-coder setup  # Configure your API keys
-   ```
-
-2. **Generate Project Context**:
-   ```bash
-   npx asis-coder -context  # Analyze your project
-   ```
-
-3. **Ask Questions**:
-   ```bash
-   npx asis-coder "explain this project structure"
-   npx asis-coder "how can I optimize this code?"
-   ```
-
-4. **Interactive Mode**:
-   ```bash
-   npx asis-coder -i  # Start interactive session
-   ```
-
 ## 🧠 Supported AI Models
 
 ### ChatGPT (OpenAI) - 14 Models
@@ -133,7 +90,6 @@ npx asis-coder "question"  # Direct query
 
 ## 📋 Available Commands
 
-### If installed globally (`npm install -g asis-coder`):
 ```bash
 # Configuration
 coder setup                    # Initial setup wizard
@@ -156,32 +112,7 @@ coder -clean                   # Clear conversation history
 coder -help                    # Show help
 ```
 
-### If using npx (no installation):
-```bash
-# Configuration
-npx asis-coder setup                    # Initial setup wizard
-npx asis-coder -token                   # Update API tokens
-npx asis-coder -model                   # Change AI model
-npx asis-coder -llm                     # Switch LLM provider
-
-# Project Analysis
-npx asis-coder -context                 # Generate project context
-npx asis-coder -project                 # Detect project type
-
-# Interaction
-npx asis-coder "your question"          # Direct query
-npx asis-coder -i                       # Interactive mode
-npx asis-coder -history                 # View conversation history
-
-# Utilities
-npx asis-coder -test                    # Test API configuration
-npx asis-coder -clean                   # Clear conversation history
-npx asis-coder -help                    # Show help
-```
-
 ## 🌟 Usage Examples
-
-### With Global Installation (`npm install -g asis-coder`):
 
 #### Basic Query
 ```bash
@@ -205,32 +136,6 @@ coder -i
 ```bash
 coder -model  # Choose from 30+ available models
 coder -llm    # Switch between ChatGPT, Claude, Gemini
-```
-
-### With NPX (no installation needed):
-
-#### Basic Query
-```bash
-npx asis-coder "What's the best way to optimize this React component?"
-```
-
-#### Project Analysis
-```bash
-npx asis-coder -context
-npx asis-coder "Analyze the architecture of this project and suggest improvements"
-```
-
-#### Interactive Development Session
-```bash
-npx asis-coder -i
-# Start a conversation about your code
-# Get real-time suggestions and explanations
-```
-
-#### Switch Between Models
-```bash
-npx asis-coder -model  # Choose from 30+ available models
-npx asis-coder -llm    # Switch between ChatGPT, Claude, Gemini
 ```
 
 ## 🏗️ Architecture

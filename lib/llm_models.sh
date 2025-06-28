@@ -210,32 +210,32 @@ list_chatgpt_models() {
     local NC='\033[0m'
     
     echo ""
-    echo -e "${GREEN}${BOLD}🤖 MODELOS DE CHATGPT DISPONIBLES${NC}"
+    echo -e "${GREEN}${BOLD}🤖 $(get_text "chatgpt_models_available")${NC}"
     echo -e "${DIM}────────────────────────────────────────────────────────────────${NC}"
     echo ""
-    echo -e "${YELLOW}📊 Modelos Clásicos:${NC}"
-    echo "1. gpt-3.5-turbo (Clásico, rápido y económico)"
-    echo "2. gpt-4 (Modelo base GPT-4)"
-    echo "3. gpt-4-turbo (Equilibrio precio/rendimiento)"
+    echo -e "${YELLOW}📊 $(get_text "classic_models"):${NC}"
+    echo "1. gpt-3.5-turbo ($(get_text "classic_fast_economic"))"
+    echo "2. gpt-4 ($(get_text "gpt4_base_model"))"
+    echo "3. gpt-4-turbo ($(get_text "price_performance_balance"))"
     echo ""
-    echo -e "${YELLOW}🚀 Modelos Omni (Multimodal):${NC}"
-    echo "4. gpt-4o (Omni - Multimodal potente)"
-    echo "5. gpt-4o-mini (Económico y rápido)"
+    echo -e "${YELLOW}🚀 $(get_text "omni_models") ($(get_text "multimodal")):${NC}"
+    echo "4. gpt-4o ($(get_text "omni_multimodal_powerful"))"
+    echo "5. gpt-4o-mini ($(get_text "economic_and_fast"))"
     echo ""
-    echo -e "${YELLOW}🧠 Modelos de Razonamiento:${NC}"
-    echo "6. o1 (Razonamiento avanzado)"
-    echo "7. o1-mini (Razonamiento rápido)"
-    echo "8. o1-preview (Vista previa de razonamiento)"
-    echo "9. o3-mini (Nuevo modelo de razonamiento)"
-    echo "10. o4-mini (Último modelo compacto)"
+    echo -e "${YELLOW}🧠 $(get_text "reasoning_models"):${NC}"
+    echo "6. o1 ($(get_text "advanced_reasoning"))"
+    echo "7. o1-mini ($(get_text "fast_reasoning"))"
+    echo "8. o1-preview ($(get_text "reasoning_preview"))"
+    echo "9. o3-mini ($(get_text "new_reasoning_model"))"
+    echo "10. o4-mini ($(get_text "latest_compact_model"))"
     echo ""
-    echo -e "${YELLOW}🆕 Nueva Generación:${NC}"
-    echo "11. gpt-4.1 (Nueva generación)"
-    echo "12. gpt-4.1-mini (Compacto nueva generación)"
-    echo "13. gpt-4.1-nano (Ultra compacto)"
-    echo "14. gpt-4.5 (Modelo más avanzado)"
+    echo -e "${YELLOW}🆕 $(get_text "new_generation"):${NC}"
+    echo "11. gpt-4.1 ($(get_text "new_generation_model"))"
+    echo "12. gpt-4.1-mini ($(get_text "compact_new_generation"))"
+    echo "13. gpt-4.1-nano ($(get_text "ultra_compact"))"
+    echo "14. gpt-4.5 ($(get_text "most_advanced_model"))"
     echo ""
-    read -p "$(echo -e "${CYAN}Selecciona el número del modelo (1-14): ${NC}")" model_choice
+    read -p "$(echo -e "${CYAN}$(get_text "select_model_number") (1-14): ${NC}")" model_choice
 
     case $model_choice in
         1) model="gpt-3.5-turbo" ;;
@@ -253,14 +253,14 @@ list_chatgpt_models() {
         13) model="gpt-4.1-nano" ;;
         14) model="gpt-4.5" ;;
         *)
-            echo -e "${YELLOW}⚠️ Opción no válida. Seleccionando gpt-4o-mini por defecto.${NC}"
+            echo -e "${YELLOW}⚠️ $(get_text "invalid_option_default_gpt4o_mini")${NC}"
             model="gpt-4o-mini"
             ;;
     esac
 
     update_config_value "model" "$model"
     log "Modelo seleccionado: $model"
-    echo -e "${GREEN}✅ Modelo ${BOLD}$model${NC}${GREEN} configurado${NC}"
+    echo -e "${GREEN}✅ $(get_text "model") ${BOLD}$model${NC}${GREEN} $(get_text "configured")${NC}"
 }
 
 # Función para listar modelos de Claude
@@ -273,26 +273,26 @@ list_claude_models() {
     local NC='\033[0m'
     
     echo ""
-    echo -e "${PURPLE}${BOLD}🎭 MODELOS DE CLAUDE DISPONIBLES${NC}"
+    echo -e "${PURPLE}${BOLD}🎭 $(get_text "claude_models_available")${NC}"
     echo -e "${DIM}────────────────────────────────────────────────────────────────${NC}"
     echo ""
-    echo -e "${YELLOW}👑 Claude 4 (Última Generación):${NC}"
-    echo "1. claude-opus-4-20250514 (Claude 4 - Más potente e inteligente)"
-    echo "2. claude-sonnet-4-20250514 (Claude 4 - Alto rendimiento)"
+    echo -e "${YELLOW}👑 $(get_text "claude_4_latest_generation"):${NC}"
+    echo "1. claude-opus-4-20250514 ($(get_text "claude_4_most_powerful"))"
+    echo "2. claude-sonnet-4-20250514 ($(get_text "claude_4_high_performance"))"
     echo ""
-    echo -e "${YELLOW}🧠 Claude 3.7 (Pensamiento Extendido):${NC}"
-    echo "3. claude-3-7-sonnet-20250219 (Claude 3.7 - Pensamiento extendido)"
+    echo -e "${YELLOW}🧠 $(get_text "claude_37_extended_thinking"):${NC}"
+    echo "3. claude-3-7-sonnet-20250219 ($(get_text "claude_37_extended_thinking_desc"))"
     echo ""
-    echo -e "${YELLOW}⚡ Claude 3.5 (Equilibrio Perfecto):${NC}"
-    echo "4. claude-3-5-sonnet-20241022 (Claude 3.5 v2 - Más reciente)"
-    echo "5. claude-3-5-sonnet-20240620 (Claude 3.5 v1 - Estable)"
-    echo "6. claude-3-5-haiku-20241022 (Rápido y económico)"
+    echo -e "${YELLOW}⚡ $(get_text "claude_35_perfect_balance"):${NC}"
+    echo "4. claude-3-5-sonnet-20241022 ($(get_text "claude_35_v2_most_recent"))"
+    echo "5. claude-3-5-sonnet-20240620 ($(get_text "claude_35_v1_stable"))"
+    echo "6. claude-3-5-haiku-20241022 ($(get_text "fast_and_economic"))"
     echo ""
-    echo -e "${YELLOW}📚 Claude 3 Legacy:${NC}"
-    echo "7. claude-3-opus-20240229 (Más inteligente legacy)"
-    echo "8. claude-3-haiku-20240307 (Ultrarrápido legacy)"
+    echo -e "${YELLOW}📚 $(get_text "claude_3_legacy"):${NC}"
+    echo "7. claude-3-opus-20240229 ($(get_text "smartest_legacy"))"
+    echo "8. claude-3-haiku-20240307 ($(get_text "ultrafast_legacy"))"
     echo ""
-    read -p "$(echo -e "${CYAN}Selecciona el número del modelo (1-8): ${NC}")" model_choice
+    read -p "$(echo -e "${CYAN}$(get_text "select_model_number") (1-8): ${NC}")" model_choice
 
     case $model_choice in
         1) model="claude-opus-4-20250514" ;;
@@ -304,14 +304,14 @@ list_claude_models() {
         7) model="claude-3-opus-20240229" ;;
         8) model="claude-3-haiku-20240307" ;;
         *)
-            echo -e "${YELLOW}⚠️ Opción no válida. Seleccionando claude-3-5-sonnet-20241022 por defecto.${NC}"
+            echo -e "${YELLOW}⚠️ $(get_text "invalid_option_default_claude")${NC}"
             model="claude-3-5-sonnet-20241022"
             ;;
     esac
 
     update_config_value "model" "$model"
     log "Modelo seleccionado: $model"
-    echo -e "${PURPLE}✅ Modelo ${BOLD}$model${NC}${PURPLE} configurado${NC}"
+    echo -e "${PURPLE}✅ $(get_text "model") ${BOLD}$model${NC}${PURPLE} $(get_text "configured")${NC}"
 }
 
 # Función para listar modelos de Gemini
@@ -323,24 +323,24 @@ list_gemini_models() {
     local NC='\033[0m'
     
     echo ""
-    echo -e "${CYAN}${BOLD}💎 MODELOS DE GEMINI DISPONIBLES${NC}"
+    echo -e "${CYAN}${BOLD}💎 $(get_text "gemini_models_available")${NC}"
     echo -e "${DIM}────────────────────────────────────────────────────────────────${NC}"
     echo ""
-    echo -e "${YELLOW}🚀 Gemini 2.5 (Más Reciente):${NC}"
-    echo "1. gemini-2.5-pro (Más potente con pensamiento)"
-    echo "2. gemini-2.5-flash (Mejor equilibrio precio/rendimiento)"
-    echo "3. gemini-2.5-flash-lite (Ultra económico)"
+    echo -e "${YELLOW}🚀 $(get_text "gemini_25_most_recent"):${NC}"
+    echo "1. gemini-2.5-pro ($(get_text "most_powerful_with_thinking"))"
+    echo "2. gemini-2.5-flash ($(get_text "best_price_performance_balance"))"
+    echo "3. gemini-2.5-flash-lite ($(get_text "ultra_economic"))"
     echo ""
-    echo -e "${YELLOW}⚡ Gemini 2.0:${NC}"
-    echo "4. gemini-2.0-flash (Generación 2.0 estándar)"
-    echo "5. gemini-2.0-flash-lite (Generación 2.0 económico)"
+    echo -e "${YELLOW}⚡ $(get_text "gemini_20"):${NC}"
+    echo "4. gemini-2.0-flash ($(get_text "generation_20_standard"))"
+    echo "5. gemini-2.0-flash-lite ($(get_text "generation_20_economic"))"
     echo ""
-    echo -e "${YELLOW}📚 Gemini 1.5 Legacy:${NC}"
-    echo "6. gemini-1.5-pro (Legacy Pro)"
-    echo "7. gemini-1.5-flash (Legacy Flash)"
-    echo "8. gemini-1.5-flash-8b (Legacy compacto)"
+    echo -e "${YELLOW}📚 $(get_text "gemini_15_legacy"):${NC}"
+    echo "6. gemini-1.5-pro ($(get_text "legacy_pro"))"
+    echo "7. gemini-1.5-flash ($(get_text "legacy_flash"))"
+    echo "8. gemini-1.5-flash-8b ($(get_text "legacy_compact"))"
     echo ""
-    read -p "$(echo -e "${CYAN}Selecciona el número del modelo (1-8): ${NC}")" model_choice
+    read -p "$(echo -e "${CYAN}$(get_text "select_model_number") (1-8): ${NC}")" model_choice
 
     case $model_choice in
         1) model="gemini-2.5-pro" ;;
@@ -352,12 +352,12 @@ list_gemini_models() {
         7) model="gemini-1.5-flash" ;;
         8) model="gemini-1.5-flash-8b" ;;
         *)
-            echo -e "${YELLOW}⚠️ Opción no válida. Seleccionando gemini-2.5-flash por defecto.${NC}"
+            echo -e "${YELLOW}⚠️ $(get_text "invalid_option_default_gemini")${NC}"
             model="gemini-2.5-flash"
             ;;
     esac
 
     update_config_value "model" "$model"
     log "Modelo seleccionado: $model"
-    echo -e "${CYAN}✅ Modelo ${BOLD}$model${NC}${CYAN} configurado${NC}"
+    echo -e "${CYAN}✅ $(get_text "model") ${BOLD}$model${NC}${CYAN} $(get_text "configured")${NC}"
 } 

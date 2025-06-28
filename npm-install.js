@@ -35,15 +35,9 @@ try {
     console.log('');
     console.log('🎉 Ahora puedes usar:');
     
-    if (isWindows) {
-            console.log('   npx asis-coder setup    # Configuración inicial');
-    console.log('   npx asis-coder -i       # Modo interactivo');
-    console.log('   npx asis-coder "pregunta" # Consulta directa');
-    } else {
         console.log('   coder setup      # Configuración inicial');
-        console.log('   coder -i         # Modo interactivo');
-        console.log('   coder "pregunta" # Consulta directa');
-    }
+    console.log('   coder -i         # Modo interactivo');
+    console.log('   coder "pregunta" # Consulta directa');
     console.log('');
     
 } catch (error) {
@@ -84,7 +78,7 @@ if %ERRORLEVEL% NEQ 0 (
     echo    - Git for Windows ^(incluye Git Bash^)
     echo    - WSL ^(Windows Subsystem for Linux^)
     echo.
-    echo Luego usa: npx asis-coder
+    echo Luego usa: coder
     exit /b 1
 )
 
