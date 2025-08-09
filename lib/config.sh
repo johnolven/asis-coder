@@ -659,6 +659,8 @@ get_text_es() {
         "assistant") echo "Asistente" ;;
         "thinking") echo "Pensando" ;;
         "exiting_interactive") echo "👋 Saliendo del modo interactivo." ;;
+        "debug_interactive_mode_started") echo "DEBUG: Modo interactivo iniciado" ;;
+        "debug_context_file") echo "DEBUG: Archivo de contexto" ;;
         *) echo "$key" ;;
     esac
 }

@@ -1,2 +1,181 @@
-coder.log
+# =============================================
+# ASIS-CODER GITIGNORE - PROTECCIÓN DE IP
+# =============================================
+
+# 🔒 PROPIEDAD INTELECTUAL - NUNCA SUBIR AL REPO
+# ===============================================
+
+# Core de Rust (código fuente propietario)
+rust-core/
+rust-core/**
+/rust-core/
+
+# 📦 BINARIOS COMPILADOS (Distribución)
+# Los binarios SÍ se incluyen para distribución
+# Usuarios obtienen binarios compilados, NO código fuente
+# /binaries/ (comentado - los binarios sí se suben)
+
+# WebAssembly compilado (propietario)  
+*.wasm
+wasm/
+wasm/**
+
+# Archivos de compilación de Rust
+target/
+target/**
+Cargo.lock
+*.pdb
+
+# Bibliotecas compiladas
+*.so
+*.dylib
+*.dll
+*.a
+*.lib
+
+# Archivos de configuración con secretos
+.env
+.env.local
+.env.production
+**/.env
+**/.env.*
+
+# Keys de API y configuración privada
+config/private/
+config/private/**
+private-config.json
+api-keys.json
+secrets.json
+
+# =============================================
+# ARCHIVOS ESTÁNDAR DE DESARROLLO
+# =============================================
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn-integrity
+
+# Logs
+logs
+*.log
+log/
+logs/
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+nyc_output/
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Paquetes de distribución (generados dinámicamente)
+*.tar.gz
+*.zip
+dist-*/
+dist/
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env
+
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Build outputs
+dist/
+build/
+out/
+
+# Test outputs
+test-results/
+coverage/
+
+# Backup files
+*.backup
+*.bak
+
+# System files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# =============================================
+# ARCHIVOS GENERADOS POR ASIS-CODER
+# =============================================
+
+# Archivos de contexto (generados automáticamente)
+contexto_codigo.txt
+contexto_unidades.json
+context_*.txt
+units_*.json
+
+# Archivos de configuración temporal
 coder_config.txt
+.coder-session
+.asis-session
+
+# Archivos de cache y temporal de Asis-coder
+.asis-cache/
+.coder-cache/
+temp-analysis/
+
+# Scripts privados de desarrollo (NUNCA en repo público)
+build-from-private.sh
+build-and-deploy.sh
+*-private.sh
+dev-*.sh
+
+# =============================================
+# ARCHIVOS QUE SÍ SE SUBEN (PÚBLICOS)
+# =============================================
+# Los siguientes NO están en gitignore:
+# - coder.sh (script principal)
+# - lib/*.sh (módulos bash públicos)
+# - binaries/* (binarios compilados para distribución)
+# - package.json, Makefile
+# - README.md, BUILD.md, DISTRIBUTION.md
+# - install.sh, install-remote.sh
+# - build.sh (script público de build)

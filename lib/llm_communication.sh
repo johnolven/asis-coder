@@ -153,6 +153,7 @@ modo_interactivo() {
     local CYAN='\033[0;36m'
     local GREEN='\033[0;32m'
     local YELLOW='\033[1;33m'
+    local PURPLE='\033[0;35m'
     local BOLD='\033[1m'
     local DIM='\033[2m'
     local NC='\033[0m'
@@ -168,25 +169,34 @@ modo_interactivo() {
         source "$CONFIG_FILE"
     fi
     
-    # Marcar que estamos en modo interactivo
-    MODO_INTERACTIVO=true
+    # Cargar idioma
+    load_language
     
     # Mostrar UI del modo interactivo
     mostrar_ui_interactivo
     
-    # Configurar archivo de historial
-    local archivo_historial="$CONFIG_DIR/historial_$(date +%Y%m%d_%H%M%S).txt"
+    # Configurar archivo de historial único para esta sesión
+    local timestamp=$(date +"%Y%m%d_%H%M%S")
+    local archivo_historial="$CONFIG_DIR/historial_$timestamp.txt"
+    
+    # Buscar archivo de contexto
     local archivo_contexto=$(encontrar_archivo_contexto)
     
-    # Cargar idioma
-    load_language
+    if $DEBUG; then
+        echo "$(get_text "debug_interactive_mode_started")"
+        echo "$(get_text "debug_history_file"): $archivo_historial"
+        echo "$(get_text "debug_context_file"): $archivo_contexto"
+    fi
+    
+    # Marcar que estamos en modo interactivo
+    MODO_INTERACTIVO=true
     
     # Crear prompt inicial con contexto si existe
     local prompt_completo=""
     if [ "$CURRENT_LANG" = "es" ]; then
-        prompt_completo="Eres un asistente de desarrollo experto. "
+        prompt_completo="Eres un asistente de desarrollo experto con capacidades de análisis avanzado. "
     else
-        prompt_completo="You are an expert development assistant. "
+        prompt_completo="You are an expert development assistant with advanced analysis capabilities. "
     fi
     
     if [[ -n "$archivo_contexto" ]]; then
@@ -196,22 +206,66 @@ modo_interactivo() {
 
 $(cat "$archivo_contexto")
 
+Tienes acceso a comandos especiales que empiezan con '/':
+- /analyze: Análisis completo del código
+- /refactor <archivo>: Sugerencias de refactorización  
+- /review: Revisión de código con mejoras
+- /security: Análisis de seguridad
+- /performance: Análisis de rendimiento
+- /test: Generar tests automáticos
+- /docs: Generar documentación
+- /fix <problema>: Arreglar problema específico
+- /think <tema>: Pensamiento profundo sobre un tema
+- /files: Listar archivos del proyecto
+- /focus <archivo>: Enfocar en archivo específico
+- /summary: Resumen del proyecto
+
 Por favor, ayúdame con mis preguntas sobre este proyecto."
         else
             prompt_completo+="Here is the current project context:
 
 $(cat "$archivo_contexto")
 
+You have access to special commands starting with '/':
+- /analyze: Complete code analysis
+- /refactor <file>: Refactoring suggestions
+- /review: Code review with improvements  
+- /security: Security analysis
+- /performance: Performance analysis
+- /test: Generate automatic tests
+- /docs: Generate documentation
+- /fix <issue>: Fix specific issue
+- /think <topic>: Deep thinking about topic
+- /files: List project files
+- /focus <file>: Focus on specific file
+- /summary: Project summary
+
 Please help me with my questions about this project."
         fi
     else
         echo -e "${YELLOW}$(get_text "no_project_context")${NC}"
         if [ "$CURRENT_LANG" = "es" ]; then
-            prompt_completo+="Ayúdame con mis preguntas de programación."
+            prompt_completo+="Ayúdame con mis preguntas de programación. Tienes acceso a comandos especiales que empiezan con '/' para análisis avanzado."
         else
-            prompt_completo+="Help me with my programming questions."
+            prompt_completo+="Help me with my programming questions. You have access to special commands starting with '/' for advanced analysis."
         fi
     fi
+    
+    # Mostrar comandos disponibles
+    echo -e "${PURPLE}${BOLD}📋 Comandos Especiales Disponibles:${NC}"
+    echo -e "${DIM}────────────────────────────────────────────────────────────────${NC}"
+    echo -e "  ${CYAN}/analyze${NC}           - Análisis completo del código"
+    echo -e "  ${CYAN}/refactor <archivo>${NC} - Sugerencias de refactorización"
+    echo -e "  ${CYAN}/review${NC}            - Revisión de código"
+    echo -e "  ${CYAN}/security${NC}          - Análisis de seguridad"
+    echo -e "  ${CYAN}/performance${NC}       - Análisis de rendimiento"
+    echo -e "  ${CYAN}/test${NC}              - Generar tests"
+    echo -e "  ${CYAN}/docs${NC}              - Generar documentación"
+    echo -e "  ${CYAN}/think <tema>${NC}      - Pensamiento profundo"
+    echo -e "  ${CYAN}/files${NC}             - Listar archivos"
+    echo -e "  ${CYAN}/summary${NC}           - Resumen del proyecto"
+    echo -e "${DIM}────────────────────────────────────────────────────────────────${NC}"
+    echo ""
     
     if $DEBUG; then
         echo "$(get_text "debug_prompt_configured"):"
@@ -219,7 +273,7 @@ Please help me with my questions about this project."
         echo "$(get_text "debug_history_file"): $archivo_historial"
     fi
     
-    # Loop del modo interactivo
+    # Loop del modo interactivo mejorado
     while true; do
         read -p "$(get_text "you"): " entrada
         
@@ -228,105 +282,138 @@ Please help me with my questions about this project."
             break
         fi
         
-        if [ "$CURRENT_LANG" = "es" ]; then
-            prompt_completo+="\nUsuario: $entrada"
+        # Procesar comandos especiales
+        if [[ "$entrada" == /* ]]; then
+            procesar_comando_slash "$entrada" "$archivo_contexto" "$prompt_completo"
         else
-            prompt_completo+="\nUser: $entrada"
-        fi
-        if $DEBUG; then
-            echo "$(get_text "debug_complete_prompt_sent"):"
-            echo "$prompt_completo"
-            echo "$(get_text "debug_sending_request")..."
-        fi
-        
-        echo -n "$(get_text "assistant"): $(get_text "thinking")..."
-        
-        # Usar un archivo temporal para almacenar la respuesta
-        temp_file=$(mktemp)
-        
-        # Iniciar la consulta en segundo plano
-        consultar_llm "$prompt_completo" > "$temp_file" &
-        pid=$!
-        
-        last_size=0
-        pensando_mostrado=true
-        respuesta_acumulada=""
-        while kill -0 $pid 2>/dev/null; do
-            current_size=$(wc -c < "$temp_file")
-            if [ "$current_size" -gt "$last_size" ]; then
-                if $pensando_mostrado; then
-                    echo -ne "\r\033[K"  # Borrar la línea actual
-                    echo -n "$(get_text "assistant"): "
-                    pensando_mostrado=false
-                fi
-                nuevo_contenido=$(tail -c +$((last_size + 1)) "$temp_file")
-                respuesta_acumulada+="$nuevo_contenido"
-                
-                # Detectar y formatear código
-                if echo "$respuesta_acumulada" | grep -q '```'; then
-                    IFS='```' read -ra ADDR <<< "$respuesta_acumulada"
-                    for i in "${!ADDR[@]}"; do
-                        if (( i % 2 == 1 )); then
-                            echo -e "\n\033[36m```"  # Cyan
-                            dar_formato_codigo "${ADDR[$i]}"
-                            echo -e "```\033[0m"  # Reset color
-                        else
-                            echo -n "${ADDR[$i]}"
-                        fi
-                    done
-                else
-                    echo -n "$nuevo_contenido"
-                fi
-                
-                last_size=$current_size
+            # Procesamiento normal de consulta
+            if [ "$CURRENT_LANG" = "es" ]; then
+                prompt_completo+="\nUsuario: $entrada"
+            else
+                prompt_completo+="\nUser: $entrada"
             fi
-            sleep 0.1
-        done
-        
-        # Asegurarse de que se muestre el contenido final
-        if $pensando_mostrado; then
-            echo -ne "\r\033[K"  # Borrar la línea actual
-            echo -n "$(get_text "assistant"): "
-        fi
-        nuevo_contenido=$(tail -c +$((last_size + 1)) "$temp_file")
-        respuesta_acumulada+="$nuevo_contenido"
-        
-        # Formatear el contenido final si es necesario
-        if echo "$respuesta_acumulada" | grep -q '```'; then
-            IFS='```' read -ra ADDR <<< "$respuesta_acumulada"
-            for i in "${!ADDR[@]}"; do
-                if (( i % 2 == 1 )); then
-                    echo -e "\n\033[36m```"  # Cyan
-                    dar_formato_codigo "${ADDR[$i]}"
-                    echo -e "```\033[0m"  # Reset color
-                else
-                    echo -n "${ADDR[$i]}"
-                fi
-            done
-        else
-            echo -n "$nuevo_contenido"
-        fi
-        echo  # Nueva línea después de la respuesta completa
-        
-        respuesta=$(cat "$temp_file")
-        rm "$temp_file"
-        
-        if $DEBUG; then
-            echo "$(get_text "debug_response_received"):"
-            echo "$respuesta"
+            
+            procesar_consulta_normal "$prompt_completo" "$archivo_historial"
         fi
         
-        prompt_completo+="\n$(get_text "assistant"): $respuesta"
-
-        # Guardar el historial actualizado
-        echo "$prompt_completo" > "$archivo_historial"
-        if $DEBUG; then
-            echo "$(get_text "debug_history_updated_saved") $archivo_historial"
+        # Actualizar prompt para próxima iteración
+        if [[ ! "$entrada" == /* ]]; then
+            prompt_completo+="\n$(get_text "assistant"): $(cat "$temp_file" 2>/dev/null || echo "")"
         fi
     done
     
     # Desmarcar modo interactivo
     unset MODO_INTERACTIVO
+}
+
+# Función para procesar comandos slash
+procesar_comando_slash() {
+    local comando="$1"
+    local archivo_contexto="$2" 
+    local prompt_base="$3"
+    local CYAN='\033[0;36m'
+    local GREEN='\033[0;32m'
+    local YELLOW='\033[1;33m'
+    local PURPLE='\033[0;35m'
+    local BOLD='\033[1m'
+    local DIM='\033[2m'
+    local NC='\033[0m'
+    
+    # Extraer comando y argumentos
+    local cmd=$(echo "$comando" | cut -d' ' -f1)
+    local args=$(echo "$comando" | cut -d' ' -f2-)
+    
+    case "$cmd" in
+        "/analyze")
+            echo -e "${PURPLE}🔍 Iniciando análisis completo del código...${NC}"
+            ejecutar_analisis_completo "$archivo_contexto"
+            ;;
+        "/refactor")
+            echo -e "${PURPLE}🔧 Analizando oportunidades de refactorización...${NC}"
+            ejecutar_refactorizacion "$args" "$archivo_contexto"
+            ;;
+        "/review")
+            echo -e "${PURPLE}👀 Realizando revisión de código...${NC}"
+            ejecutar_revision_codigo "$archivo_contexto"
+            ;;
+        "/security")
+            echo -e "${PURPLE}🛡️ Analizando seguridad del código...${NC}"
+            ejecutar_analisis_seguridad "$archivo_contexto"
+            ;;
+        "/performance")
+            echo -e "${PURPLE}⚡ Analizando rendimiento...${NC}"
+            ejecutar_analisis_rendimiento "$archivo_contexto"
+            ;;
+        "/test")
+            echo -e "${PURPLE}🧪 Generando tests automáticos...${NC}"
+            ejecutar_generacion_tests "$archivo_contexto"
+            ;;
+        "/docs")
+            echo -e "${PURPLE}📚 Generando documentación...${NC}"
+            ejecutar_generacion_docs "$archivo_contexto"
+            ;;
+        "/think")
+            echo -e "${PURPLE}🧠 Pensamiento profundo activado...${NC}"
+            ejecutar_pensamiento_profundo "$args" "$archivo_contexto"
+            ;;
+        "/files")
+            echo -e "${PURPLE}📁 Listando archivos del proyecto...${NC}"
+            listar_archivos_proyecto
+            ;;
+        "/focus")
+            echo -e "${PURPLE}🎯 Enfocando en: $args${NC}"
+            enfocar_archivo "$args"
+            ;;
+        "/summary")
+            echo -e "${PURPLE}📋 Generando resumen del proyecto...${NC}"
+            generar_resumen_proyecto "$archivo_contexto"
+            ;;
+        "/fix")
+            echo -e "${PURPLE}🔨 Arreglando: $args${NC}"
+            ejecutar_fix_problema "$args" "$archivo_contexto"
+            ;;
+        *)
+            echo -e "${YELLOW}❓ Comando no reconocido: $cmd${NC}"
+            echo -e "${DIM}Usa uno de los comandos disponibles o escribe tu pregunta normalmente.${NC}"
+            ;;
+    esac
+}
+
+# Función para procesar consulta normal
+procesar_consulta_normal() {
+    local prompt_completo="$1"
+    local archivo_historial="$2"
+    
+    if $DEBUG; then
+        echo "$(get_text "debug_complete_prompt_sent"):"
+        echo "$prompt_completo"
+        echo "$(get_text "debug_sending_request")..."
+    fi
+    
+    echo -n "$(get_text "assistant"): $(get_text "thinking")..."
+    
+    # Usar un archivo temporal para almacenar la respuesta
+    temp_file=$(mktemp)
+    
+    # Iniciar la consulta en segundo plano
+    consultar_llm "$prompt_completo" > "$temp_file" &
+    pid=$!
+    
+    mostrar_respuesta_streaming "$pid" "$temp_file"
+    
+    respuesta=$(cat "$temp_file")
+    rm "$temp_file"
+    
+    if $DEBUG; then
+        echo "$(get_text "debug_response_received"):"
+        echo "$respuesta"
+    fi
+    
+    # Guardar el historial actualizado
+    echo "$prompt_completo" > "$archivo_historial"
+    if $DEBUG; then
+        echo "$(get_text "debug_history_updated_saved") $archivo_historial"
+    fi
 }
 
 # Función para limpiar el historial

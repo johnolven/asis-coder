@@ -173,6 +173,25 @@ if [ -f "$LIB_DIR/llm_communication.sh" ]; then
     echo "❌ Error: No se encontró llm_communication.sh en $LIB_DIR"
     exit 1
 fi
+
+# Módulo de análisis avanzado de código
+if [ -f "$LIB_DIR/code_analysis.sh" ]; then
+    source "$LIB_DIR/code_analysis.sh"
+    if $DEBUG; then echo "✅ Módulo de análisis avanzado cargado"; fi
+else
+    echo "❌ Error: No se encontró code_analysis.sh en $LIB_DIR"
+    exit 1
+fi
+
+# Módulo de core inteligente (nativo)
+if [ -f "$LIB_DIR/intelligent_core.sh" ]; then
+    source "$LIB_DIR/intelligent_core.sh"
+    init_intelligent_core
+    if $DEBUG; then echo "✅ Módulo de core inteligente cargado"; fi
+else
+    echo "❌ Error: No se encontró intelligent_core.sh en $LIB_DIR"
+    exit 1
+fi
         
         if $DEBUG; then
     echo "🎉 Todos los módulos cargados exitosamente"
@@ -237,6 +256,37 @@ main() {
             load_language
             select_language
             ;;
+        "code")
+            # Nuevos comandos de codificación inteligente
+            shift
+            case "$1" in
+                "fix")
+                    shift
+                    ejecutar_fix_inteligente "$*"
+                    ;;
+                "implement")
+                    shift
+                    ejecutar_implementacion_inteligente "$*"
+                    ;;
+                "analyze")
+                    shift
+                    ejecutar_analisis_inteligente "$*"
+                    ;;
+                "refactor")
+                    shift  
+                    ejecutar_refactor_inteligente "$*"
+                    ;;
+                *)
+                    mostrar_ayuda_code
+                    ;;
+            esac
+            ;;
+        "units"|"-units")
+            generar_unidades_contexto
+            ;;
+        "status")
+            mostrar_estado_completo
+            ;;
         "")
             # Verificar si es primera vez (no hay idioma configurado)
             if [ ! -f "$LANG_FILE" ]; then
@@ -245,7 +295,12 @@ main() {
             validar_y_mostrar_ui
             ;;
         *)
-            consultar_llm "$*"
+            # Usar consulta inteligente si está disponible
+            if is_intelligent_core_available; then
+                consultar_llm_inteligente "$*"
+            else
+                consultar_llm "$*"
+            fi
             ;;
     esac
 }
