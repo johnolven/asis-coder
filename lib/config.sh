@@ -285,7 +285,6 @@ get_text_en() {
         "compact_new_generation") echo "Compact new generation" ;;
         "ultra_compact") echo "Ultra compact" ;;
         "most_advanced_model") echo "Most advanced model" ;;
-        "open_source_models") echo "🌟 Open Source Models" ;;
         "select_model_number") echo "Select the model number" ;;
         "invalid_option_default_gpt4o_mini") echo "⚠️ Invalid option. Selecting gpt-4o-mini by default." ;;
         "claude_models_available") echo "🎭 AVAILABLE CLAUDE MODELS" ;;
@@ -563,7 +562,6 @@ get_text_es() {
         "compact_new_generation") echo "Compacto nueva generación" ;;
         "ultra_compact") echo "Ultra compacto" ;;
         "most_advanced_model") echo "Modelo más avanzado" ;;
-        "open_source_models") echo "🌟 Modelos de Código Abierto" ;;
         "select_model_number") echo "Selecciona el número del modelo" ;;
         "invalid_option_default_gpt4o_mini") echo "⚠️ Opción no válida. Seleccionando gpt-4o-mini por defecto." ;;
         "claude_models_available") echo "🎭 MODELOS DE CLAUDE DISPONIBLES" ;;

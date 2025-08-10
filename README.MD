@@ -13,7 +13,7 @@
 - 🔧 **Modular Architecture**: Clean, maintainable codebase with specialized modules
 - 🌐 **Cross-Platform**: Works on macOS, Linux, and Windows
 - ⚡ **Context Generation**: Automatically includes relevant project files
-- 🎯 **31+ AI Models**: Support for latest models from all providers including open-source
+- 🎯 **30+ AI Models**: Support for latest models from all providers
 
 ## ⚡ Installation
 
@@ -70,11 +70,10 @@ Requires one of these environments:
 
 ## 🧠 Supported AI Models
 
-### ChatGPT (OpenAI) - 15 Models
+### ChatGPT (OpenAI) - 14 Models
 - GPT-4o, GPT-4o-mini
 - GPT-4 Turbo, GPT-4
 - GPT-3.5 Turbo variants
-- **NEW**: gpt-oss-20b (Open Source, 21B parameters)
 - And more...
 
 ### Claude (Anthropic) - 8 Models
