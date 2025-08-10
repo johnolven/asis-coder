@@ -1,7 +1,7 @@
 {
   "name": "asis-coder",
-  "version": "2.1.1",
-  "description": "🤖 AI Development Assistant with Intelligent Code Generation - Create projects, analyze code, and modify files using advanced AI agents with ChatGPT, Claude, and Gemini",
+  "version": "2.1.2",
+  "description": "🤖 AI Development Assistant with Intelligent Code Generation - Create projects, analyze code, and modify files using advanced AI agents with ChatGPT, Claude, Gemini, and Open Source models (gpt-oss-20b)",
   "main": "coder.sh",
   "bin": {
     "asis-coder": "coder.sh",
@@ -37,7 +37,13 @@
     "code-modification",
     "context-units",
     "intelligent-refactoring",
-    "project-creation"
+    "project-creation",
+    "open-source-models",
+    "gpt-oss",
+    "ollama",
+    "huggingface",
+    "model-download",
+    "local-ai"
   ],
   "author": {
     "name": "JohnOlven",

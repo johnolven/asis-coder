@@ -27,7 +27,7 @@ update_llm_choice() {
     echo ""
     echo -e "${GREEN}${BOLD}1. ChatGPT${NC} ${DIM}(OpenAI)${NC}"
     echo -e "   $(get_text "cost_medium") | $(get_text "very_smart") | $(get_text "fast")"
-    echo -e "   🔹 14 $(get_text "models"): gpt-3.5-turbo → o4-mini"
+    echo -e "   🔹 15 $(get_text "models"): gpt-3.5-turbo → gpt-oss-20b"
     echo ""
     echo -e "${PURPLE}${BOLD}2. Claude${NC} ${DIM}(Anthropic)${NC}"
     echo -e "   $(get_text "premium") | $(get_text "creative") | $(get_text "excellent_writing")"
@@ -235,7 +235,10 @@ list_chatgpt_models() {
     echo "13. gpt-4.1-nano ($(get_text "ultra_compact"))"
     echo "14. gpt-4.5 ($(get_text "most_advanced_model"))"
     echo ""
-    read -p "$(echo -e "${CYAN}$(get_text "select_model_number") (1-14): ${NC}")" model_choice
+    echo -e "${YELLOW}🌟 $(get_text "open_source_models"):${NC}"
+    echo "15. gpt-oss-20b (Modelo de código abierto, 21B parámetros, razonamiento avanzado)"
+    echo ""
+    read -p "$(echo -e "${CYAN}$(get_text "select_model_number") (1-15): ${NC}")" model_choice
 
     case $model_choice in
         1) model="gpt-3.5-turbo" ;;
@@ -252,6 +255,21 @@ list_chatgpt_models() {
         12) model="gpt-4.1-mini" ;;
         13) model="gpt-4.1-nano" ;;
         14) model="gpt-4.5" ;;
+        15) 
+            model="gpt-oss-20b" 
+            # Verificar si el modelo ya está descargado
+            if ! check_gpt_oss_installed; then
+                show_gpt_oss_download_ui
+                if [ $? -eq 0 ]; then
+                    echo -e "${GREEN}✅ Modelo gpt-oss-20b descargado correctamente${NC}"
+                else
+                    echo -e "${YELLOW}⚠️ Descarga cancelada. Usando gpt-4o-mini por defecto.${NC}"
+                    model="gpt-4o-mini"
+                fi
+            else
+                echo -e "${GREEN}✅ gpt-oss-20b ya está instalado y listo para usar${NC}"
+            fi
+            ;;
         *)
             echo -e "${YELLOW}⚠️ $(get_text "invalid_option_default_gpt4o_mini")${NC}"
             model="gpt-4o-mini"
@@ -360,4 +378,42 @@ list_gemini_models() {
     update_config_value "model" "$model"
     log "Modelo seleccionado: $model"
     echo -e "${CYAN}✅ $(get_text "model") ${BOLD}$model${NC}${CYAN} $(get_text "configured")${NC}"
-} 
+}
+
+# =======================================================
+# FUNCIONES PARA GPT-OSS-20B (MODELO OPEN SOURCE)
+# =======================================================
+
+# Función para verificar si gpt-oss-20b está instalado
+check_gpt_oss_installed() {
+    # Verificar diferentes métodos de instalación
+    
+    # 1. Verificar Ollama
+    if command -v ollama >/dev/null 2>&1; then
+        if ollama list 2>/dev/null | grep -q "gpt-oss:20b"; then
+            return 0
+        fi
+    fi
+    
+    # 2. Verificar Hugging Face CLI
+    if command -v huggingface-cli >/dev/null 2>&1; then
+        if [ -d "$HOME/.cache/huggingface/hub/models--openai--gpt-oss-20b" ]; then
+            return 0
+        fi
+    fi
+    
+    # 3. Verificar directorio local
+    if [ -d "$HOME/.local/share/asis-coder/models/gpt-oss-20b" ]; then
+        return 0
+    fi
+    
+    # 4. Verificar LM Studio
+    if [ -d "$HOME/.cache/lm-studio/models/openai/gpt-oss-20b" ]; then
+        return 0
+    fi
+    
+    return 1
+}
+
+# Cargar funciones adicionales de GPT-OSS
+source "$(dirname "${BASH_SOURCE[0]}")/gpt_oss_functions.sh" 
