@@ -178,6 +178,7 @@ modify_code_with_agents() {
     local api_key="$2" 
     local model="$3"
     local files="$4"  # Separados por coma
+    local user_working_dir="${5:-$PWD}"
     
     if ! is_intelligent_core_available; then
         echo "❌ Modificación inteligente de código no disponible"
@@ -209,6 +210,12 @@ modify_code_with_agents() {
     
     if [ $exit_code -eq 0 ]; then
         echo "$result"
+        
+        # 🚀 MEJORA: Mostrar plan y pedir confirmación para crear archivos
+        if [[ "$input" == *"create"* || "$input" == *"Create"* ]] && [[ "$files" != "" ]]; then
+            show_plan_and_request_confirmation "$input" "$files" "$user_working_dir"
+        fi
+        
         return 0
     else
         if $DEBUG; then
@@ -385,6 +392,7 @@ init_intelligent_core() {
 # Función para ejecutar fix inteligente
 ejecutar_fix_inteligente() {
     local descripcion="$1"
+    local user_working_dir="${2:-$PWD}"
     
     if [ -z "$descripcion" ]; then
         echo "❌ Error: Describe el problema a arreglar"
@@ -405,7 +413,7 @@ ejecutar_fix_inteligente() {
         echo "📁 Archivos detectados: $archivos_relevantes"
         echo "🤖 Ejecutando agentes de fix..."
         
-        local resultado=$(modify_code_with_agents "Fix: $descripcion" "$api_key" "$model" "$archivos_relevantes")
+        local resultado=$(modify_code_with_agents "Fix: $descripcion" "$api_key" "$model" "$archivos_relevantes" "$user_working_dir")
         
         if [ $? -eq 0 ]; then
             echo "$resultado"
@@ -424,6 +432,7 @@ ejecutar_fix_inteligente() {
 # Función para ejecutar implementación inteligente
 ejecutar_implementacion_inteligente() {
     local descripcion="$1"
+    local user_working_dir="${2:-$PWD}"
     
     if [ -z "$descripcion" ]; then
         echo "❌ Error: Describe la funcionalidad a implementar"
@@ -434,6 +443,34 @@ ejecutar_implementacion_inteligente() {
     echo "⚡ Iniciando implementación inteligente..."
     echo "📋 Feature: $descripcion"
     
+    # 🚀 DETECTAR SI ES UNA SOLICITUD DE CREACIÓN DE ARCHIVOS
+    if [[ "$descripcion" == *"create"* || "$descripcion" == *"Create"* || "$descripcion" == *"landing"* || "$descripcion" == *"page"* || "$descripcion" == *"component"* || "$descripcion" == *".html"* || "$descripcion" == *".js"* || "$descripcion" == *".tsx"* || "$descripcion" == *".py"* ]]; then
+        echo "🎯 Detectada solicitud de creación de código nuevo"
+        
+        # Extraer o generar nombre de archivo
+        local target_file=""
+        if [[ "$descripcion" == *".html"* ]]; then
+            target_file=$(echo "$descripcion" | grep -o '[a-zA-Z0-9_-]*\.html' | head -1)
+        elif [[ "$descripcion" == *".js"* ]]; then
+            target_file=$(echo "$descripcion" | grep -o '[a-zA-Z0-9_-]*\.js' | head -1)
+        elif [[ "$descripcion" == *".tsx"* ]]; then
+            target_file=$(echo "$descripcion" | grep -o '[a-zA-Z0-9_-]*\.tsx' | head -1)
+        elif [[ "$descripcion" == *"landing"* ]]; then
+            target_file="landing-page.html"
+        elif [[ "$descripcion" == *"component"* ]]; then
+            target_file="component.tsx"
+        else
+            target_file="index.html"
+        fi
+        
+        echo "📁 Archivo objetivo: $target_file"
+        
+        # Usar nuestra nueva funcionalidad de plan y confirmación
+        show_plan_and_request_confirmation "$descripcion" "$target_file" "$user_working_dir"
+        return $?
+    fi
+    
+    # Si no es creación, usar el flujo normal
     if is_intelligent_core_available; then
         get_api_config
         
@@ -441,7 +478,7 @@ ejecutar_implementacion_inteligente() {
         local contexto_proyecto=$(generate_advanced_context ".")
         
         echo "🤖 Ejecutando agentes de implementación..."
-        local resultado=$(modify_code_with_agents "Implement: $descripcion" "$api_key" "$model" "")
+        local resultado=$(modify_code_with_agents "Implement: $descripcion" "$api_key" "$model" "" "$user_working_dir")
         
         if [ $? -eq 0 ]; then
             echo "$resultado"
@@ -491,6 +528,7 @@ ejecutar_analisis_inteligente() {
 # Función para ejecutar refactor inteligente
 ejecutar_refactor_inteligente() {
     local descripcion="$1"
+    local user_working_dir="${2:-$PWD}"
     
     if [ -z "$descripcion" ]; then
         echo "❌ Error: Describe qué refactorizar"
@@ -508,7 +546,7 @@ ejecutar_refactor_inteligente() {
         local contexto=$(generate_advanced_context ".")
         
         echo "🤖 Ejecutando agentes de refactorización..."
-        local resultado=$(modify_code_with_agents "Refactor: $descripcion" "$api_key" "$model" "")
+        local resultado=$(modify_code_with_agents "Refactor: $descripcion" "$api_key" "$model" "" "$user_working_dir")
         
         if [ $? -eq 0 ]; then
             echo "$resultado"
@@ -688,4 +726,249 @@ detectar_archivos_relevantes() {
     fi
     
     echo "$archivos"
+}
+
+# Función para mostrar plan y pedir confirmación antes de crear archivos
+show_plan_and_request_confirmation() {
+    local user_request="$1"
+    local target_files="$2"
+    local user_working_dir="${3:-$PWD}"
+    
+    echo ""
+    echo -e "${CYAN}🎯 PLAN DE GENERACIÓN DE CÓDIGO${NC}"
+    echo -e "${YELLOW}═══════════════════════════════════════════════════════${NC}"
+    echo ""
+    
+    # Generar código real usando LLM
+    echo -e "${CYAN}🧠 Generando código con IA...${NC}"
+    
+    # Configurar parámetros para LLM
+    local api_key model llm_choice
+    local config_file="${SCRIPT_DIR}/coder_config.txt"
+    if [ -f "$config_file" ]; then
+        llm_choice=$(grep "llm_choice=" "$config_file" | cut -d'"' -f2)
+        api_key=$(grep "${llm_choice}_api_key=" "$config_file" | cut -d'"' -f2)
+        model=$(grep "model=" "$config_file" | cut -d'"' -f2)
+    fi
+    
+    # Crear prompt mejorado para generación de código
+    local enhanced_prompt="You are a professional code generator for Asis-coder AI assistant.
+
+USER REQUEST: $user_request
+TARGET FILES: $target_files
+
+Generate COMPLETE, PROFESSIONAL, PRODUCTION-READY code. 
+
+Requirements:
+1. Create FULL working code, not placeholders
+2. Include ALL necessary HTML, CSS, JavaScript
+3. Make it responsive and modern
+4. Add proper comments and structure
+5. Include all dependencies and imports
+
+For HTML files: Include complete HTML5 structure with CSS and JavaScript embedded
+For React: Include complete component with all imports
+For landing pages: Include hero, features, pricing, contact sections
+
+Return ONLY the complete code that should be written to the file, no explanations."
+
+    # Llamar al LLM para generar el código
+    local generated_code=""
+    case "$llm_choice" in
+        "chatgpt")
+            generated_code=$(call_chatgpt_api "$enhanced_prompt" "$api_key" "$model")
+            ;;
+        "claude")
+            generated_code=$(call_claude_api "$enhanced_prompt" "$api_key" "$model")
+            ;;
+        "gemini")
+            generated_code=$(call_gemini_api "$enhanced_prompt" "$api_key" "$model")
+            ;;
+        *)
+            echo -e "${RED}❌ LLM no configurado correctamente${NC}"
+            return 1
+            ;;
+    esac
+    
+    if [ -z "$generated_code" ] || [ "$generated_code" = "null" ]; then
+        echo -e "${RED}❌ Error: No se pudo generar el código${NC}"
+        return 1
+    fi
+    
+    # Mostrar plan de archivos
+    echo -e "${GREEN}📂 ARCHIVOS A CREAR:${NC}"
+    IFS=',' read -ra FILE_ARRAY <<< "$target_files"
+    for file in "${FILE_ARRAY[@]}"; do
+        file=$(echo "$file" | xargs) # trim whitespace
+        echo -e "   ${YELLOW}•${NC} $file"
+    done
+    echo ""
+    
+    # Mostrar vista previa del código
+    echo -e "${GREEN}👁️ VISTA PREVIA DEL CÓDIGO:${NC}"
+    echo -e "${CYAN}═══════════════════════════════════════════════════════${NC}"
+    
+    # Mostrar las primeras líneas del código generado
+    echo "$generated_code" | head -30
+    
+    local total_lines=$(echo "$generated_code" | wc -l | xargs)
+    if [ "$total_lines" -gt 30 ]; then
+        echo -e "${YELLOW}... (+$(($total_lines - 30)) líneas más)${NC}"
+    fi
+    
+    echo -e "${CYAN}═══════════════════════════════════════════════════════${NC}"
+    echo ""
+    
+    # Pedir confirmación
+    echo -e "${YELLOW}🤔 ¿Deseas crear estos archivos?${NC}"
+    echo -e "${GREEN}   [y/yes] - Crear archivos${NC}"
+    echo -e "${RED}   [n/no]  - Cancelar${NC}"
+    echo -e "${CYAN}   [v/view] - Ver código completo${NC}"
+    echo ""
+    
+    while true; do
+        read -p "Tu decisión: " user_decision
+        
+        case "$user_decision" in
+            y|yes|Y|YES|sí|si)
+                echo ""
+                echo -e "${GREEN}✅ Creando archivos...${NC}"
+                create_files_from_generated_code "$target_files" "$generated_code" "$user_working_dir"
+                break
+                ;;
+            n|no|N|NO)
+                echo -e "${YELLOW}⏹️  Operación cancelada por el usuario${NC}"
+                return 0
+                ;;
+            v|view|V|VIEW)
+                echo ""
+                echo -e "${CYAN}📄 CÓDIGO COMPLETO:${NC}"
+                echo -e "${CYAN}═══════════════════════════════════════════════════════${NC}"
+                echo "$generated_code"
+                echo -e "${CYAN}═══════════════════════════════════════════════════════${NC}"
+                echo ""
+                echo -e "${YELLOW}¿Deseas crear estos archivos? [y/n/v]:${NC}"
+                ;;
+            *)
+                echo -e "${RED}❌ Opción no válida. Usa: y/yes, n/no, v/view${NC}"
+                ;;
+        esac
+    done
+}
+
+# Función para crear archivos a partir del código generado
+create_files_from_generated_code() {
+    local target_files="$1"
+    local generated_code="$2"
+    local user_working_dir="${3:-$PWD}"
+    
+    # Detectar tipo de proyecto y crear estructura inteligente
+    local project_name=""
+    local project_dir="$user_working_dir"
+    
+    # Si el usuario pidió un proyecto específico, crear carpeta organizada
+    if echo "$target_files" | grep -E '\.(html|tsx|py|js)$' >/dev/null; then
+        case "$target_files" in
+            *landing*|*.html) project_name="landing-page" ;;
+            *dashboard*|*component*|*.tsx) project_name="react-dashboard" ;;
+            *api*|*main.py*) project_name="python-api" ;;
+            *) project_name="generated-code" ;;
+        esac
+        
+        # Crear carpeta del proyecto si no estamos ya en una
+        if [ "$(basename "$user_working_dir")" != "$project_name" ]; then
+            project_dir="$user_working_dir/$project_name"
+            if [ ! -d "$project_dir" ]; then
+                mkdir -p "$project_dir"
+                echo -e "${CYAN}📁 Creando proyecto: $project_name${NC}"
+                echo -e "${YELLOW}📍 Ubicación: $project_dir${NC}"
+                echo ""
+            fi
+        fi
+    fi
+    
+    IFS=',' read -ra FILE_ARRAY <<< "$target_files"
+    
+    for file in "${FILE_ARRAY[@]}"; do
+        file=$(echo "$file" | xargs) # trim whitespace
+        
+        # Construir ruta completa en el directorio del usuario
+        local full_file_path="$project_dir/$file"
+        
+        # Crear directorio si no existe
+        local dir=$(dirname "$full_file_path")
+        if [ "$dir" != "." ] && [ ! -d "$dir" ]; then
+            mkdir -p "$dir"
+            echo -e "${CYAN}📁 Creado directorio: $dir${NC}"
+        fi
+        
+        # Crear archivo en la ubicación correcta
+        echo "$generated_code" > "$full_file_path"
+        
+        # Verificar que se creó correctamente
+        if [ -f "$full_file_path" ]; then
+            local file_size=$(ls -lah "$full_file_path" | awk '{print $5}')
+            local relative_path=$(echo "$full_file_path" | sed "s|$user_working_dir/||")
+            echo -e "${GREEN}✅ Creado: $relative_path ($file_size)${NC}"
+        else
+            echo -e "${RED}❌ Error creando: $full_file_path${NC}"
+        fi
+    done
+    
+    echo ""
+    echo -e "${GREEN}🎉 ¡Archivos creados exitosamente!${NC}"
+    echo -e "${CYAN}💡 Puedes usar estos comandos:${NC}"
+    echo -e "   ${YELLOW}• ./coder.sh code analyze${NC} - Analizar el código creado"
+    echo -e "   ${YELLOW}• ./coder.sh code review${NC} - Revisar y mejorar"
+    if [[ "$target_files" == *".html"* ]]; then
+        echo -e "   ${YELLOW}• open $file${NC} - Abrir en navegador"
+    fi
+}
+
+# Funciones auxiliares para llamadas a LLM (simplificadas)
+call_chatgpt_api() {
+    local prompt="$1"
+    local api_key="$2" 
+    local model="$3"
+    
+    # Escape prompt for JSON
+    local escaped_prompt=$(echo "$prompt" | sed 's/"/\\"/g' | tr -d '\n')
+    
+    local response=$(curl -s -X POST "https://api.openai.com/v1/chat/completions" \
+        -H "Authorization: Bearer $api_key" \
+        -H "Content-Type: application/json" \
+        -d "{\"model\": \"$model\", \"messages\": [{\"role\": \"user\", \"content\": \"$escaped_prompt\"}], \"max_tokens\": 3000}")
+    
+    # Extract content more reliably
+    echo "$response" | jq -r '.choices[0].message.content // empty' 2>/dev/null
+}
+
+call_claude_api() {
+    local prompt="$1"
+    local api_key="$2"
+    local model="$3"
+    
+    curl -s -X POST "https://api.anthropic.com/v1/messages" \
+        -H "x-api-key: $api_key" \
+        -H "Content-Type: application/json" \
+        -H "anthropic-version: 2023-06-01" \
+        -d "{
+            \"model\": \"$model\",
+            \"max_tokens\": 4000,
+            \"messages\": [{\"role\": \"user\", \"content\": \"$prompt\"}]
+        }" | jq -r '.content[0].text // empty'
+}
+
+call_gemini_api() {
+    local prompt="$1"
+    local api_key="$2"
+    local model="$3"
+    
+    curl -s -X POST "https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent?key=$api_key" \
+        -H "Content-Type: application/json" \
+        -d "{
+            \"contents\": [{
+                \"parts\": [{\"text\": \"$prompt\"}]
+            }]
+        }" | jq -r '.candidates[0].content.parts[0].text // empty'
 }

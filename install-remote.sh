@@ -198,3 +198,4 @@ echo -e "${GREEN}🐛 Reportar bugs: ${BOLD}https://github.com/${GITHUB_REPO}/is
 echo ""
 echo -e "${YELLOW}⚠️  Nota: Necesitarás configurar tu API key (OpenAI, Claude, o Gemini) en el primer uso${NC}"
 echo -e "${YELLOW}════════════════════════════════════════${NC}"
+

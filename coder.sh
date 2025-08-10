@@ -10,6 +10,9 @@
 # Variables iniciales
 DEBUG=false
 
+# Capturar directorio de trabajo del usuario ANTES de cambiar al directorio de asis-coder
+USER_WORKING_DIR="$PWD"
+
 # Obtener el directorio del script de forma dinámica
 # Primero intentar obtener la ruta real del script actual
 SCRIPT_PATH="${BASH_SOURCE[0]}"
@@ -38,6 +41,7 @@ if [ ! -f "$SCRIPT_PATH" ] || [[ "$SCRIPT_PATH" == *"../"* ]]; then
 fi
 
 SCRIPT_DIR="$(dirname "$SCRIPT_PATH")"
+export SCRIPT_DIR
 
 # Buscar el directorio lib (para instalación local, npm global y npx)
 if [ -d "$SCRIPT_DIR/lib" ]; then
@@ -262,19 +266,19 @@ main() {
             case "$1" in
                 "fix")
                     shift
-                    ejecutar_fix_inteligente "$*"
+                    ejecutar_fix_inteligente "$*" "$USER_WORKING_DIR"
                     ;;
                 "implement")
                     shift
-                    ejecutar_implementacion_inteligente "$*"
+                    ejecutar_implementacion_inteligente "$*" "$USER_WORKING_DIR"
                     ;;
                 "analyze")
                     shift
                     ejecutar_analisis_inteligente "$*"
                     ;;
-                "refactor")
-                    shift  
-                    ejecutar_refactor_inteligente "$*"
+                                "refactor")
+                    shift
+                    ejecutar_refactor_inteligente "$*" "$USER_WORKING_DIR"
                     ;;
                 *)
                     mostrar_ayuda_code
