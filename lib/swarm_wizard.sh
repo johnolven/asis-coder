@@ -55,15 +55,15 @@ _wiz_confirm() {
 _wiz_menu() {
     local title="$1"; shift
     local options=("$@")
-    echo
-    echo -e "${SWARM_C_BOLD}$title${SWARM_C_RESET}"
+    echo >&2
+    echo -e "${SWARM_C_BOLD}$title${SWARM_C_RESET}" >&2
     local i=1
     for opt in "${options[@]}"; do
-        echo -e "  ${SWARM_C_CYAN}$i)${SWARM_C_RESET} $opt"
+        echo -e "  ${SWARM_C_CYAN}$i)${SWARM_C_RESET} $opt" >&2
         i=$((i+1))
     done
     local choice
-    read -p "$(echo -e "${SWARM_C_CYAN}?${SWARM_C_RESET} Opción: ")" choice
+    read -p "$(echo -e "${SWARM_C_CYAN}?${SWARM_C_RESET} Opción: ")" choice >&2
     echo "$choice"
 }
 
@@ -367,8 +367,23 @@ EOF
     if [ -n "$current_role" ]; then
         echo
         swarm_warn "Este dispositivo ya tiene rol: $current_role"
-        if ! _wiz_confirm "¿Continuar y reconfigurar?" "N"; then
-            exit 0
+
+        if [ "$current_role" = "parent" ]; then
+            local choice
+            choice="$(_wiz_menu "¿Qué deseas hacer?" \
+                "Desplegar a dispositivos hijo (children)" \
+                "Reconfigurar este dispositivo" \
+                "Cancelar")"
+
+            case "$choice" in
+                1) _wiz_deploy_children; return 0 ;;
+                2) ;; # continuar a reconfiguración
+                *) swarm_info "Cancelado."; return 0 ;;
+            esac
+        else
+            if ! _wiz_confirm "¿Continuar y reconfigurar?" "N"; then
+                exit 0
+            fi
         fi
     fi
 

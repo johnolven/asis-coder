@@ -189,19 +189,16 @@ swarm_role_init_child() {
 }
 
 swarm_role_init() {
-    local role="" ip="" parent="" token="" name=""
-    # Leer args hasta encontrar --role
-    local args=("$@")
-    local i=0
-    while [ $i -lt ${#args[@]} ]; do
-        case "${args[$i]}" in
-            --role) role="${args[$((i+1))]}"; i=$((i+2)) ;;
-            --ip)   ip="${args[$((i+1))]}"; i=$((i+2)) ;;
-            *) i=$((i+1)) ;;
+    local role=""
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            --role) role="$2"; shift 2 ;;
+            *) break ;;
         esac
     done
+
     case "$role" in
-        parent) swarm_role_init_parent "$ip" ;;
+        parent) swarm_role_init_parent "$@" ;;
         child)  swarm_role_init_child "$@" ;;
         "")     swarm_role_help ;;
         *)      swarm_error "Rol desconocido: $role (usa parent|child)"; return 1 ;;
