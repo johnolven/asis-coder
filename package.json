@@ -1,7 +1,7 @@
 {
   "name": "asis-coder",
-  "version": "2.1.2",
-  "description": "🤖 AI Development Assistant with Intelligent Code Generation - Create projects, analyze code, and modify files using advanced AI agents with ChatGPT, Claude, Gemini, and Open Source models (gpt-oss-20b)",
+  "version": "3.0.0",
+  "description": "AI Development Assistant with Intelligent Code Generation and Distributed Agent Swarm Orchestration - Run parallel Claude agents across AGX, Raspberry Pi, and other devices via SSH + git worktrees",
   "main": "coder.sh",
   "bin": {
     "asis-coder": "coder.sh",
@@ -9,7 +9,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "./coder.sh"
+    "start": "./coder.sh",
+    "postinstall": "node npm-install.js || true"
   },
   "keywords": [
     "ai",
@@ -43,7 +44,16 @@
     "ollama",
     "huggingface",
     "model-download",
-    "local-ai"
+    "local-ai",
+    "swarm",
+    "orchestration",
+    "distributed",
+    "multi-agent",
+    "raspberry-pi",
+    "jetson",
+    "worktree",
+    "tmux",
+    "ssh"
   ],
   "author": {
     "name": "JohnOlven",

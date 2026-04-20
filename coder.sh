@@ -196,6 +196,14 @@ else
     echo "❌ Error: No se encontró intelligent_core.sh en $LIB_DIR"
     exit 1
 fi
+
+# Módulos SWARM (orquestación distribuida - opcional, se carga si existen)
+for mod in swarm_common.sh swarm_role.sh swarm_enroll.sh swarm_daemon.sh swarm_bootstrap.sh swarm_wizard.sh device_manager.sh worktree_manager.sh project_swarm.sh swarm_manager.sh agent_comm.sh swarm_router.sh; do
+    if [ -f "$LIB_DIR/$mod" ]; then
+        source "$LIB_DIR/$mod"
+        if $DEBUG; then echo "✅ Módulo swarm cargado: $mod"; fi
+    fi
+done
         
         if $DEBUG; then
     echo "🎉 Todos los módulos cargados exitosamente"
@@ -290,6 +298,15 @@ main() {
             ;;
         "status")
             mostrar_estado_completo
+            ;;
+        "swarm")
+            shift
+            if declare -F swarm_router >/dev/null 2>&1; then
+                swarm_router "$@"
+            else
+                echo "❌ Módulos swarm no disponibles (verifica $LIB_DIR/swarm_*.sh)"
+                exit 1
+            fi
             ;;
         "")
             # Verificar si es primera vez (no hay idioma configurado)

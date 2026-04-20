@@ -47,48 +47,70 @@ detect_os() {
 
 # Instalar dependencias según el sistema
 install_dependencies() {
-    print_status "Verificando e instalando dependencias..."
-    
-    local deps_missing=false
-    
-    # Verificar dependencias
-    for cmd in curl jq; do
-        if ! command -v "$cmd" >/dev/null 2>&1; then
-            deps_missing=true
-            break
-        fi
+    print_status "Verificando e instalando dependencias base..."
+
+    local missing=()
+    for cmd in curl jq git ssh tmux; do
+        command -v "$cmd" >/dev/null 2>&1 || missing+=("$cmd")
     done
-    
-    if [ "$deps_missing" = true ]; then
-        print_status "Instalando dependencias faltantes..."
-        
+
+    if [ ${#missing[@]} -gt 0 ]; then
+        print_status "Instalando dependencias faltantes: ${missing[*]}"
         case "$OS" in
             "linux")
                 case "$DISTRO" in
                     "debian")
-                        sudo apt-get update && sudo apt-get install -y curl jq file
+                        sudo apt-get update && sudo apt-get install -y curl jq file git openssh-client tmux
                         ;;
                     "rhel")
-                        sudo yum install -y curl jq file
+                        sudo yum install -y curl jq file git openssh-clients tmux
                         ;;
                     "arch")
-                        sudo pacman -S --noconfirm curl jq file
+                        sudo pacman -S --noconfirm curl jq file git openssh tmux
                         ;;
                 esac
                 ;;
             "macos")
                 if command -v brew >/dev/null 2>&1; then
-                    brew install curl jq
+                    brew install curl jq git tmux
                 else
-                    print_error "Homebrew no está instalado. Por favor instala las dependencias manualmente:"
-                    print_error "curl, jq, file"
+                    print_error "Homebrew no está instalado. Instala manualmente: curl, jq, git, tmux"
                     exit 1
                 fi
                 ;;
         esac
     fi
-    
-    print_success "Dependencias verificadas"
+    print_success "Dependencias base verificadas"
+}
+
+install_swarm_extras() {
+    print_status "Verificando dependencias opcionales para swarm..."
+
+    if ! command -v redis-server >/dev/null 2>&1; then
+        print_warning "redis-server no encontrado (opcional, para comunicación entre agentes)"
+        read -p "  Instalar Redis? [y/N] " answer
+        if [[ "$answer" =~ ^[Yy] ]]; then
+            case "$OS" in
+                "linux")
+                    case "$DISTRO" in
+                        "debian") sudo apt-get install -y redis-server redis-tools ;;
+                        "rhel")   sudo yum install -y redis ;;
+                        "arch")   sudo pacman -S --noconfirm redis ;;
+                    esac
+                    ;;
+                "macos") brew install redis ;;
+            esac
+        fi
+    else
+        print_success "Redis instalado"
+    fi
+
+    if ! command -v claude >/dev/null 2>&1; then
+        print_warning "claude CLI no encontrado (necesario para los agentes)"
+        print_status "Instala con: npm install -g @anthropic-ai/claude-code"
+    else
+        print_success "Claude CLI instalado"
+    fi
 }
 
 # Obtener la ruta absoluta del directorio del proyecto
@@ -104,6 +126,7 @@ print_status "Sistema detectado: $OS"
 
 # Instalar dependencias
 install_dependencies
+install_swarm_extras
 
 # Crear directorios necesarios
 print_status "Creando directorios..."
@@ -141,5 +164,14 @@ print_status "  1. Reinicia tu terminal o ejecuta: source ~/.bashrc (o ~/.zshrc)
 print_status "  2. Ve a tu proyecto: cd /ruta/a/tu/proyecto"
 print_status "  3. Ejecuta: coder -contexto"
 print_status "  4. Haz tu primera consulta: coder \"explica este proyecto\""
+print_status ""
+print_status "Swarm (orquestación distribuida):"
+print_status "  1. coder swarm init"
+print_status "  2. coder swarm device add <ip> --name <n> --type rpi --user pi"
+print_status "  3. coder swarm device setup <n>    (instala dependencias en el device)"
+print_status "  4. coder swarm project create <p> --repo <url>"
+print_status "  5. coder swarm agent add <p> <a> --device <n> --branch <b> --task \"...\""
+print_status "  6. coder swarm start <p>"
+print_status "  7. coder swarm doctor              (diagnóstico completo)"
 print_status ""
 print_warning "Nota: Necesitarás configurar tu API key de OpenAI o Anthropic en el primer uso"
