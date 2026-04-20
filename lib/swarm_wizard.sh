@@ -180,6 +180,32 @@ EOF
 _wiz_deploy_children() {
     _wiz_title "DESPLEGAR A CHILDREN"
 
+    # Verificar y configurar Redis si no está escuchando en la red
+    local parent_ip
+    parent_ip="$(jq -r '.ip' "$SWARM_ROLE_FILE" 2>/dev/null)"
+    if [ -n "$parent_ip" ]; then
+        if ! redis-cli -h "$parent_ip" ping >/dev/null 2>&1; then
+            swarm_warn "Redis no escucha en $parent_ip. Configurando..."
+            local redis_conf="/etc/redis/redis.conf"
+            if [ -f "$redis_conf" ]; then
+                if ! sudo grep -qE "^bind .*${parent_ip}" "$redis_conf"; then
+                    sudo sed -i "s/^bind 127.0.0.1.*$/bind 127.0.0.1 $parent_ip/" "$redis_conf"
+                fi
+                sudo sed -i 's/^protected-mode yes/protected-mode no/' "$redis_conf"
+                sudo systemctl restart redis-server
+                sleep 2
+                if redis-cli -h "$parent_ip" ping 2>/dev/null | grep -q PONG; then
+                    swarm_ok "Redis ahora escucha en $parent_ip:6379"
+                else
+                    swarm_error "Redis no responde. Verifica la configuración manualmente."
+                    return 1
+                fi
+            fi
+        else
+            swarm_ok "Redis ya escucha en $parent_ip:6379"
+        fi
+    fi
+
     local default_user="pi"
     local user
     user="$(_wiz_prompt "Usuario SSH en las Raspberries" "$default_user")"
