@@ -30,6 +30,10 @@ ${SWARM_C_BOLD}DAEMON${SWARM_C_RESET}  (en cada child)
   coder swarm daemon status
   coder swarm daemon logs [--follow]
 
+${SWARM_C_BOLD}CREACIÓN DE PROYECTOS${SWARM_C_RESET}
+  coder swarm create          ⭐ Asistente interactivo (recomendado)
+                              Pregunta contexto, genera PRDs, crea estructura
+
 ${SWARM_C_BOLD}GESTIÓN${SWARM_C_RESET}  (en el parent)
   coder swarm device  ...     Inventario de dispositivos
   coder swarm project ...     Proyectos y repos
@@ -124,6 +128,7 @@ swarm_router() {
         role)    swarm_role_cmd "$@" ;;
         wizard)  swarm_wizard_run "$@" ;;
         doctor)  swarm_doctor ;;
+        create)  swarm_project_wizard "$@" ;;
 
         enroll)  swarm_enroll_cmd "$@" ;;
         daemon)  swarm_daemon_cmd "$@" ;;
