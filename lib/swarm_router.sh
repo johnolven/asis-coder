@@ -47,15 +47,25 @@ ${SWARM_C_BOLD}EJECUCIÓN${SWARM_C_RESET}  (en el parent)
 ${SWARM_C_BOLD}COMUNICACIÓN${SWARM_C_RESET}
   coder swarm msg ...         Mensajes entre agentes
 
+${SWARM_C_BOLD}DASHBOARD${SWARM_C_RESET}  (monitor en tiempo real tipo htop)
+  coder swarm dashboard [--mode all|devices|agents|redis|logs] [--refresh N]
+  Controles: q=quit, d=devices, a=agents, r=redis, l=logs, v=all, +/-=speed
+
 ${SWARM_C_BOLD}RALPH (EJECUCIÓN AUTÓNOMA)${SWARM_C_RESET}
   coder swarm ralph start <project> <agent> --prd <prd.json> [--iterations N]
   coder swarm ralph stop <project> <agent>
   coder swarm ralph status <project> <agent>
   coder swarm ralph logs <project> <agent> [--follow]
   coder swarm ralph progress <project> <agent>
+  coder swarm ralph validate <project> <agent>
 
   Ejecuta Claude Code repetidamente hasta completar todos los items del PRD.
   Usa skills: /prd → genera PRD | /ralph → convierte a JSON
+
+${SWARM_C_BOLD}PRD GENERATOR${SWARM_C_RESET}  (generar PRDs desde templates)
+  coder swarm prd bootstrap <project> --type <nodejs|python|go|rust>
+  coder swarm prd feature <project> <name> --description "<desc>"
+  coder swarm prd merger <project> [--branches feat/a,feat/b,...]
 
 ${SWARM_C_BOLD}BOOTSTRAP AUTOMATIZADO${SWARM_C_RESET}  (recomendado)
 
@@ -133,6 +143,8 @@ swarm_router() {
 
         msg)      swarm_comm_cmd "$@" ;;
         ralph)    swarm_ralph_cmd "$@" ;;
+        prd)      prd_generate_cmd "$@" ;;
+        dashboard) swarm_dashboard_cmd "$@" ;;
 
         ""|help|-h|--help) swarm_help ;;
         *) swarm_error "Subcomando 'swarm $cmd' desconocido."; swarm_help; return 1 ;;

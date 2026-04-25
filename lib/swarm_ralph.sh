@@ -24,6 +24,7 @@ ${SWARM_C_BOLD}COMANDOS${SWARM_C_RESET}
   coder swarm ralph status <proyecto> <agente>
   coder swarm ralph logs <proyecto> <agente> [--follow]
   coder swarm ralph progress <proyecto> <agente>
+  coder swarm ralph validate <proyecto> <agente>  # Verifica build/tests
 
 ${SWARM_C_BOLD}OPCIONES${SWARM_C_RESET}
   --prd <file>          Archivo prd.json (obligatorio para start)
@@ -46,6 +47,9 @@ ${SWARM_C_BOLD}FLUJO COMPLETO${SWARM_C_RESET}
   coder swarm ralph status mi-app auth-agent
   coder swarm ralph logs mi-app auth-agent --follow
 
+  # 5. Valida resultado
+  coder swarm ralph validate mi-app auth-agent
+
 ${SWARM_C_BOLD}EJEMPLO${SWARM_C_RESET}
   coder swarm project create auth-app --repo https://github.com/user/app.git
   coder swarm agent add auth-app auth-feature --device RB001 --branch feat/auth
@@ -54,6 +58,7 @@ ${SWARM_C_BOLD}EJEMPLO${SWARM_C_RESET}
   # Ralph trabajará hasta completar todos los items del PRD
   # Verifica progreso:
   coder swarm ralph progress auth-app auth-feature
+  coder swarm ralph validate auth-app auth-feature
 EOF
 }
 
@@ -317,6 +322,168 @@ swarm_ralph_progress() {
     fi
 }
 
+swarm_ralph_detect_project_type() {
+    local project="$1" agent="$2"
+
+    local agent_info device_name
+    agent_info="$(swarm_agent_get "$project" "$agent")"
+    [ -z "$agent_info" ] && return 1
+
+    device_name="$(echo "$agent_info" | jq -r '.device')"
+    local project_dir="/home/\$USER/swarm-projects/$project"
+
+    # Check for project type markers
+    local project_type=""
+
+    if swarm_ssh_cmd "$device_name" "[ -f $project_dir/package.json ]"; then
+        project_type="nodejs"
+    elif swarm_ssh_cmd "$device_name" "[ -f $project_dir/requirements.txt ] || [ -f $project_dir/setup.py ] || [ -f $project_dir/pyproject.toml ]"; then
+        project_type="python"
+    elif swarm_ssh_cmd "$device_name" "[ -f $project_dir/go.mod ]"; then
+        project_type="go"
+    elif swarm_ssh_cmd "$device_name" "[ -f $project_dir/Cargo.toml ]"; then
+        project_type="rust"
+    elif swarm_ssh_cmd "$device_name" "[ -f $project_dir/composer.json ]"; then
+        project_type="php"
+    elif swarm_ssh_cmd "$device_name" "[ -f $project_dir/pom.xml ] || [ -f $project_dir/build.gradle ]"; then
+        project_type="java"
+    else
+        project_type="unknown"
+    fi
+
+    echo "$project_type"
+}
+
+swarm_ralph_validate() {
+    local project="$1" agent="$2"
+
+    if [ -z "$project" ] || [ -z "$agent" ]; then
+        swarm_error "Uso: coder swarm ralph validate <proyecto> <agente>"
+        return 1
+    fi
+
+    local agent_info device_name
+    agent_info="$(swarm_agent_get "$project" "$agent")"
+    [ -z "$agent_info" ] && { swarm_error "Agente no encontrado"; return 1; }
+
+    device_name="$(echo "$agent_info" | jq -r '.device')"
+    local project_dir="/home/\$USER/swarm-projects/$project"
+
+    echo -e "${SWARM_C_BOLD}Validando proyecto: $project/$agent${SWARM_C_RESET}"
+    echo "Device: $device_name"
+    echo
+
+    # Detect project type
+    local project_type
+    project_type="$(swarm_ralph_detect_project_type "$project" "$agent")"
+    swarm_info "Tipo detectado: $project_type"
+    echo
+
+    local validation_result=0
+
+    case "$project_type" in
+        nodejs)
+            swarm_info "Ejecutando validación Node.js..."
+            echo "  → npm install"
+            if swarm_ssh_cmd "$device_name" "cd $project_dir && npm install >/dev/null 2>&1"; then
+                swarm_ok "npm install: PASS"
+            else
+                swarm_error "npm install: FAIL"
+                validation_result=1
+            fi
+
+            echo "  → npm run build (si existe)"
+            if swarm_ssh_cmd "$device_name" "cd $project_dir && npm run build >/dev/null 2>&1"; then
+                swarm_ok "npm run build: PASS"
+            else
+                swarm_warn "npm run build: SKIP (no existe o falló)"
+            fi
+
+            echo "  → npm test (si existe)"
+            if swarm_ssh_cmd "$device_name" "cd $project_dir && npm test -- --passWithNoTests >/dev/null 2>&1"; then
+                swarm_ok "npm test: PASS"
+            else
+                swarm_warn "npm test: SKIP (no existe o falló)"
+            fi
+            ;;
+
+        python)
+            swarm_info "Ejecutando validación Python..."
+            echo "  → pip install -r requirements.txt"
+            if swarm_ssh_cmd "$device_name" "cd $project_dir && pip install -q -r requirements.txt >/dev/null 2>&1"; then
+                swarm_ok "pip install: PASS"
+            else
+                swarm_warn "pip install: SKIP (no requirements.txt)"
+            fi
+
+            echo "  → pytest (si existe)"
+            if swarm_ssh_cmd "$device_name" "cd $project_dir && python -m pytest >/dev/null 2>&1"; then
+                swarm_ok "pytest: PASS"
+            else
+                swarm_warn "pytest: SKIP"
+            fi
+
+            echo "  → python -m py_compile *.py"
+            if swarm_ssh_cmd "$device_name" "cd $project_dir && find . -name '*.py' -exec python -m py_compile {} + 2>&1"; then
+                swarm_ok "syntax check: PASS"
+            else
+                swarm_error "syntax check: FAIL"
+                validation_result=1
+            fi
+            ;;
+
+        go)
+            swarm_info "Ejecutando validación Go..."
+            echo "  → go build"
+            if swarm_ssh_cmd "$device_name" "cd $project_dir && go build ./... >/dev/null 2>&1"; then
+                swarm_ok "go build: PASS"
+            else
+                swarm_error "go build: FAIL"
+                validation_result=1
+            fi
+
+            echo "  → go test"
+            if swarm_ssh_cmd "$device_name" "cd $project_dir && go test ./... >/dev/null 2>&1"; then
+                swarm_ok "go test: PASS"
+            else
+                swarm_warn "go test: SKIP"
+            fi
+            ;;
+
+        rust)
+            swarm_info "Ejecutando validación Rust..."
+            echo "  → cargo build"
+            if swarm_ssh_cmd "$device_name" "cd $project_dir && cargo build >/dev/null 2>&1"; then
+                swarm_ok "cargo build: PASS"
+            else
+                swarm_error "cargo build: FAIL"
+                validation_result=1
+            fi
+
+            echo "  → cargo test"
+            if swarm_ssh_cmd "$device_name" "cd $project_dir && cargo test >/dev/null 2>&1"; then
+                swarm_ok "cargo test: PASS"
+            else
+                swarm_warn "cargo test: SKIP"
+            fi
+            ;;
+
+        *)
+            swarm_warn "Tipo de proyecto desconocido, no hay validaciones automáticas"
+            swarm_info "Define validaciones manualmente en el PRD"
+            ;;
+    esac
+
+    echo
+    if [ $validation_result -eq 0 ]; then
+        swarm_ok "VALIDACIÓN: PASS"
+    else
+        swarm_error "VALIDACIÓN: FAIL"
+    fi
+
+    return $validation_result
+}
+
 swarm_ralph_cmd() {
     local sub="$1"; shift || true
     case "$sub" in
@@ -325,6 +492,7 @@ swarm_ralph_cmd() {
         status)   swarm_ralph_status "$@" ;;
         logs)     swarm_ralph_logs "$@" ;;
         progress) swarm_ralph_progress "$@" ;;
+        validate) swarm_ralph_validate "$@" ;;
         ""|help|-h|--help) swarm_ralph_help ;;
         *) swarm_error "Subcomando desconocido: $sub"; swarm_ralph_help; return 1 ;;
     esac
