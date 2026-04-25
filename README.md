@@ -1,19 +1,54 @@
 
-## Claude Code Skill: Swarm Orchestration
+## Claude Code Skills: PRD, Ralph & Swarm
 
-Asis-coder includes a Claude Code skill (`/swarm`) that enables Claude to orchestrate tasks across your Raspberry Pi swarm.
+Asis-coder includes **3 Claude Code skills** that enable autonomous feature development across your Raspberry Pi swarm:
 
-### Installation
+1. **`/prd`** - Generate Product Requirements Documents interactively
+2. **`/ralph`** - Convert PRDs to Ralph JSON format for autonomous execution
+3. **`/swarm`** - Orchestrate distributed agents across Raspberry Pis
 
-The skill is automatically installed to `~/.claude/skills/swarm.md` during setup. To manually install:
+### Automatic Installation
+
+All skills are **automatically installed** to `~/.claude/skills/` during:
+- `./install.sh` (local installation)
+- `curl ... | bash` (bootstrap-parent.sh / bootstrap-child.sh)
+
+No manual steps required! After installation, skills are immediately available in Claude Code.
+
+### Manual Installation
+
+If needed, copy skills manually:
 
 ```bash
-cp skills/swarm.md ~/.claude/skills/
+cp skills/*.md ~/.claude/skills/
 ```
+
+### Complete Workflow: Autonomous Feature Development
+
+```bash
+# 1. Ask Claude to create a PRD
+"Create a PRD for a user authentication system"
+# → Claude invokes /prd skill
+# → Asks you clarifying questions (with A/B/C options)
+# → Saves to tasks/prd-auth.md
+
+# 2. Ask Claude to convert to Ralph format
+"Convert this PRD to Ralph JSON format"
+# → Claude invokes /ralph skill
+# → Generates prd.json with all user stories
+
+# 3. Deploy to Raspberry Pi (autonomous execution)
+coder swarm ralph start myapp auth-agent --prd prd.json
+# → Ralph runs Claude Code repeatedly on the Raspberry
+# → Completes all PRD items autonomously
+# → You wake up with a finished feature
+```
+
+**Result:** Feature developed overnight while you sleep!
 
 ### Usage in Claude Code
 
-Once installed, Claude will automatically recognize swarm commands. You can:
+Claude will automatically recognize and use these skills. You can:
 
 **Invoke the skill directly:**
 ```

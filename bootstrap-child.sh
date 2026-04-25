@@ -105,6 +105,14 @@ if ! echo "$PATH" | grep -q "$HOME/.local/bin"; then
 fi
 export PATH="$HOME/.local/bin:$PATH"
 
+# Instalar Claude Code skills
+echo "  Instalando Claude Code skills..."
+mkdir -p "$HOME/.claude/skills"
+if [ -d "$INSTALL_DIR/skills" ]; then
+    cp "$INSTALL_DIR/skills"/*.md "$HOME/.claude/skills/" 2>/dev/null || true
+    echo "  Skills: /prd, /ralph, /swarm"
+fi
+
 echo "[5/6] Inicializando rol child y enrolando..."
 bash "$INSTALL_DIR/coder.sh" swarm init --role child \
     --parent "$PARENT_IP" --token "$TOKEN" --name "$NAME" 2>&1 | grep -v "^DEBUG"

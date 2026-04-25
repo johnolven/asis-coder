@@ -133,6 +133,26 @@ print_status "Creando directorios..."
 mkdir -p "$BIN_DIR"
 mkdir -p "$CONFIG_DIR"
 
+# Instalar Claude Code skills
+CLAUDE_SKILLS_DIR="$HOME/.claude/skills"
+if [ -d "$PROJECT_DIR/skills" ]; then
+    print_status "Instalando Claude Code skills..."
+    mkdir -p "$CLAUDE_SKILLS_DIR"
+
+    for skill in "$PROJECT_DIR/skills"/*.md; do
+        if [ -f "$skill" ]; then
+            skill_name=$(basename "$skill")
+            cp "$skill" "$CLAUDE_SKILLS_DIR/"
+            print_success "Skill instalado: $skill_name"
+        fi
+    done
+
+    print_status "Skills disponibles:"
+    print_status "  /prd     - Genera Product Requirements Documents"
+    print_status "  /ralph   - Convierte PRDs a formato JSON para Ralph"
+    print_status "  /swarm   - Orquesta agentes distribuidos en Raspberry Pi"
+fi
+
 # Crear un enlace simbólico en $BIN_DIR
 print_status "Creando enlace simbólico..."
 ln -sf "$PROJECT_DIR/coder.sh" "$BIN_DIR/coder"
