@@ -12,9 +12,61 @@
 
 swarm_wizard_help() {
     cat <<EOF
-${SWARM_C_BOLD}coder swarm wizard${SWARM_C_RESET}  -  configuración interactiva
+${SWARM_C_BOLD}coder swarm wizard${SWARM_C_RESET}  -  configuración interactiva del swarm
 
-Pregunta qué rol tiene este dispositivo y configura todo automáticamente.
+Interfaz guiada para configurar el swarm de Raspberry Pi de forma automática.
+
+${SWARM_C_BOLD}USO${SWARM_C_RESET}
+  coder swarm wizard
+
+${SWARM_C_BOLD}FUNCIONAMIENTO${SWARM_C_RESET}
+  - Detecta si el dispositivo ya tiene rol (parent/child)
+  - Para PARENT: opción de desplegar a devices hijo vía SSH
+  - Para CHILD: opción de reconfigurar
+  - Configura Redis, SSH keys, systemd services automáticamente
+  - Zero-touch deployment: un comando configura todo el swarm
+
+${SWARM_C_BOLD}PARENT${SWARM_C_RESET} (orquestador único del swarm)
+  - Instala y configura Redis como broker
+  - Genera token de enrolamiento
+  - Configura systemd listener para auto-enrollment
+  - Opción de desplegar a múltiples children vía SSH masivo
+
+${SWARM_C_BOLD}CHILD${SWARM_C_RESET} (worker, múltiples en el swarm)
+  - Se conecta al parent con token
+  - Auto-enrola en el inventario del parent
+  - Configura daemon para recibir comandos vía Redis
+  - Ejecuta tareas de forma autónoma
+
+${SWARM_C_BOLD}SKILLS INTEGRADOS${SWARM_C_RESET}
+  Después de configurar el swarm, Claude puede:
+  - /prd     → Generar Product Requirements Document
+  - /ralph   → Convertir PRD a formato JSON para Ralph
+  - /swarm   → Orquestar agentes distribuidos
+
+  Flujo completo:
+    1. Pídele a Claude: "crea un PRD para [feature]"
+    2. Pídele: "convierte este PRD a formato Ralph"
+    3. Ejecuta: coder swarm ralph start <proyecto> <agente> --prd prd.json
+
+  Ralph ejecuta Claude repetidamente hasta completar todo el PRD.
+
+${SWARM_C_BOLD}EJEMPLO${SWARM_C_RESET}
+  # En el parent (AGX):
+  coder swarm wizard
+  → Elige "Desplegar a dispositivos hijo"
+  → Ingresa IPs: 192.168.50.10 192.168.50.11 192.168.50.12
+  → Usuario: johnolven (o pi)
+  → Contraseña para SSH keys
+
+  # Resultado: 3 Raspberries configuradas y listas
+  coder swarm device list
+  coder swarm run test-proyecto agent1 "hostname"
+
+${SWARM_C_BOLD}VER TAMBIÉN${SWARM_C_RESET}
+  coder swarm help
+  coder swarm device --help
+  coder swarm bootstrap --help
 EOF
 }
 
@@ -375,6 +427,12 @@ EOF
 
 # ---------- Entry point ----------
 swarm_wizard_run() {
+    # Check for help flag
+    if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]] || [[ "$1" == "help" ]]; then
+        swarm_wizard_help
+        return 0
+    fi
+
     clear 2>/dev/null || true
     echo -e "${SWARM_C_BOLD}"
     cat <<'EOF'

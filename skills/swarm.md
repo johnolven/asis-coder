@@ -1,11 +1,21 @@
 ---
 name: swarm
-description: Orchestrate distributed Claude agents across Raspberry Pi devices in a parent/child swarm architecture
+description: Orchestrate distributed Claude agents across Raspberry Pi devices in a parent/child swarm architecture. Supports both interactive Claude sessions and autonomous Ralph loops.
 ---
 
 # Swarm Orchestration Skill
 
 Execute tasks across multiple physical devices (Raspberry Pis) in parallel using the asis-coder swarm infrastructure.
+
+## Two Execution Modes
+
+### Mode 1: Interactive Claude (Manual Control)
+You control Claude directly on a remote device. Use for exploration, debugging, and interactive development.
+
+### Mode 2: Autonomous Ralph Loop (Autonomous)
+Ralph runs Claude repeatedly until all PRD items complete. Use for large feature work that can run unattended.
+
+**Workflow:** Use `/prd` skill → `/ralph` skill → `coder swarm ralph start`
 
 ## Architecture
 
@@ -67,6 +77,27 @@ coder swarm logs <project> <agent> [--follow]
 coder swarm status [project]
 ```
 
+### Ralph Autonomous Execution (Coming Soon)
+
+```bash
+# Start autonomous Ralph loop on a device
+coder swarm ralph start <project> <agent> --prd <prd.json> --iterations <N>
+
+# Monitor Ralph progress
+coder swarm ralph status <project> <agent>
+
+# Stop Ralph loop
+coder swarm ralph stop <project> <agent>
+
+# View Ralph logs
+coder swarm ralph logs <project> <agent>
+```
+
+**Prerequisites:**
+1. Create PRD: Ask Claude "create a PRD for [feature]" (uses `/prd` skill)
+2. Convert to JSON: Ask Claude "convert this PRD to ralph format" (uses `/ralph` skill)
+3. Start Ralph: `coder swarm ralph start ...`
+
 ### Parallel Execution Pattern
 
 To run tasks in parallel across multiple devices:
@@ -87,6 +118,9 @@ Use this skill when:
 - User mentions distributed computing, cluster, or multi-device work
 - User wants to test/deploy code on physical hardware
 - User asks about device status, connectivity, or resources
+- **User wants autonomous feature development with Ralph**
+- User asks to "create a PRD and run it on the swarm"
+- User mentions "autonomous development" or "Ralph loop"
 
 ## Current Active Devices
 
@@ -95,6 +129,36 @@ Based on `coder swarm device list`:
 - **RB02** (192.168.50.11) - Raspberry Pi, user: pi, status: online
 - **RB03** (192.168.50.12) - Raspberry Pi, user: pi, status: online
 - **RB00** (192.168.50.13) - Raspberry Pi, user: pi, status: online
+
+## Complete Ralph + Swarm Workflow
+
+### End-to-End Autonomous Feature Development
+
+```bash
+# Step 1: Generate PRD (interactive with Claude)
+"Create a PRD for a user authentication system"
+# → Claude invokes /prd skill
+# → Asks clarifying questions
+# → Saves to tasks/prd-auth.md
+
+# Step 2: Convert to Ralph JSON
+"Convert this PRD to Ralph format"
+# → Claude invokes /ralph skill
+# → Generates prd.json
+
+# Step 3: Deploy to swarm device (when implemented)
+coder swarm ralph start myapp auth-agent --prd prd.json --iterations 20
+# → Installs Ralph on device automatically
+# → Creates git worktree for branch
+# → Runs autonomous loop until all stories complete
+# → Reports progress back to parent
+
+# Step 4: Monitor
+coder swarm ralph status myapp auth-agent
+coder swarm ralph logs myapp auth-agent --follow
+```
+
+**Result**: Feature developed autonomously while you sleep. Claude iterates until PRD complete.
 
 ## Example Workflows
 

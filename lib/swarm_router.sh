@@ -102,7 +102,7 @@ swarm_router() {
     case "$cmd" in
         init)    swarm_role_init "$@" ;;
         role)    swarm_role_cmd "$@" ;;
-        wizard)  swarm_wizard_run ;;
+        wizard)  swarm_wizard_run "$@" ;;
         doctor)  swarm_doctor ;;
 
         enroll)  swarm_enroll_cmd "$@" ;;
