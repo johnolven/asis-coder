@@ -47,6 +47,16 @@ ${SWARM_C_BOLD}EJECUCIÓN${SWARM_C_RESET}  (en el parent)
 ${SWARM_C_BOLD}COMUNICACIÓN${SWARM_C_RESET}
   coder swarm msg ...         Mensajes entre agentes
 
+${SWARM_C_BOLD}RALPH (EJECUCIÓN AUTÓNOMA)${SWARM_C_RESET}
+  coder swarm ralph start <project> <agent> --prd <prd.json> [--iterations N]
+  coder swarm ralph stop <project> <agent>
+  coder swarm ralph status <project> <agent>
+  coder swarm ralph logs <project> <agent> [--follow]
+  coder swarm ralph progress <project> <agent>
+
+  Ejecuta Claude Code repetidamente hasta completar todos los items del PRD.
+  Usa skills: /prd → genera PRD | /ralph → convierte a JSON
+
 ${SWARM_C_BOLD}BOOTSTRAP AUTOMATIZADO${SWARM_C_RESET}  (recomendado)
 
 En el PARENT (una sola línea):
@@ -122,6 +132,7 @@ swarm_router() {
         run)      swarm_run "$@" ;;
 
         msg)      swarm_comm_cmd "$@" ;;
+        ralph)    swarm_ralph_cmd "$@" ;;
 
         ""|help|-h|--help) swarm_help ;;
         *) swarm_error "Subcomando 'swarm $cmd' desconocido."; swarm_help; return 1 ;;

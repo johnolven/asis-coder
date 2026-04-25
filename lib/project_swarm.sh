@@ -82,6 +82,14 @@ swarm_project_remove() {
     swarm_ok "Proyecto '$name' eliminado (worktrees quedan en los devices)."
 }
 
+swarm_project_get() {
+    local name="$1"
+    local pfile
+    pfile="$(swarm_project_file "$name")"
+    [ ! -f "$pfile" ] && return 1
+    cat "$pfile"
+}
+
 swarm_agent_add() {
     local project="$1" agent="$2"; shift 2
     local device="" branch="" task=""
@@ -164,6 +172,26 @@ swarm_agent_task() {
         '(.agents[] | select(.name==$a) | .task) = $t' \
         "$pfile" > "$tmp" && mv "$tmp" "$pfile"
     swarm_ok "Tarea del agente '$agent' actualizada."
+}
+
+swarm_agent_get() {
+    local project="$1" agent="$2"
+    local pfile
+    pfile="$(swarm_project_file "$project")"
+    [ ! -f "$pfile" ] && return 1
+    jq --arg a "$agent" '.agents[] | select(.name==$a)' "$pfile"
+}
+
+swarm_agent_update_status() {
+    local project="$1" agent="$2" status="$3"
+    local pfile
+    pfile="$(swarm_project_file "$project")"
+    [ ! -f "$pfile" ] && return 1
+    local tmp
+    tmp="$(mktemp)"
+    jq --arg a "$agent" --arg s "$status" \
+        '(.agents[] | select(.name==$a) | .status) = $s' \
+        "$pfile" > "$tmp" && mv "$tmp" "$pfile"
 }
 
 swarm_project_cmd() {
