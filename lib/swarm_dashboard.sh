@@ -39,7 +39,9 @@ get_term_size() {
 # Draw box characters
 draw_box_line() {
     local char="${1:-─}"
-    printf "$char%.0s" $(seq 1 $TERM_COLS)
+    local width=${2:-$TERM_COLS}
+    [ $width -lt 1 ] && width=1
+    printf "$char%.0s" $(seq 1 $width)
 }
 
 # Dashboard state
@@ -47,6 +49,65 @@ DASHBOARD_MODE="all"  # all, devices, agents, redis, logs
 DASHBOARD_REFRESH=2
 DASHBOARD_RUNNING=true
 DASHBOARD_SCROLL=0
+
+# Sparkline characters
+SPARK_CHARS=("▁" "▂" "▃" "▄" "▅" "▆" "▇" "█")
+
+# CPU/RAM history (circular buffers)
+declare -A CPU_HISTORY
+declare -A RAM_HISTORY
+HISTORY_SIZE=12
+
+# Store metric in history
+store_metric() {
+    local device="$1" type="$2" value="$3"
+    local key="${type}_HISTORY[$device]"
+    local hist="${!key}"
+
+    # Add new value
+    hist="$hist $value"
+
+    # Keep only last N values
+    local count=$(echo "$hist" | wc -w)
+    if [ $count -gt $HISTORY_SIZE ]; then
+        local start=$((count - HISTORY_SIZE + 1))
+        hist=$(echo "$hist" | awk '{for(i='$start'; i<=NF; i++) printf "%s ", $i}')
+    fi
+
+    eval "${type}_HISTORY[$device]=\"$hist\""
+}
+
+# Generate sparkline from values
+generate_sparkline() {
+    local values="$1"
+    [ -z "$values" ] && echo "▁▁▁▁▁▁▁▁" && return
+
+    local max=1
+    for v in $values; do
+        [ "$v" -gt "$max" ] && max=$v
+    done
+
+    local sparkline=""
+    for v in $values; do
+        local idx=$((v * 7 / max))
+        [ "$idx" -gt 7 ] && idx=7
+        sparkline+="${SPARK_CHARS[$idx]}"
+    done
+
+    echo "$sparkline"
+}
+
+# Get sparkline for device
+get_sparkline() {
+    local device="$1" type="$2"
+    local key="${type}_HISTORY[$device]"
+    local hist="${!key}"
+    generate_sparkline "$hist"
+}
+
+# Check terminal width
+is_narrow() { [ $TERM_COLS -lt 100 ]; }
+is_wide() { [ $TERM_COLS -ge 120 ]; }
 
 swarm_dashboard_help() {
     cat <<EOF
@@ -158,17 +219,23 @@ draw_header() {
             child)  role_text="[C] Child Mode" ;;
         esac
     fi
-    printf "%*s" $((TERM_COLS - 28 - ${#role_text})) " "
+    local title_len=26
+    local padding=$((TERM_COLS - title_len - ${#role_text} - 4))
+    [ $padding -lt 0 ] && padding=0
+    printf "%*s" $padding " "
     tput_color yellow
     printf "%s" "$role_text"
     tput_reset; tput_color cyan
     printf " │\n"
 
     local hostname_text="$(hostname) @ $(hostname -I | awk '{print $1}')"
+    local refresh_text="Refresh: ${DASHBOARD_REFRESH}s"
     printf "│ %s" "$hostname_text"
-    printf "%*s" $((TERM_COLS - ${#hostname_text} - 4)) " "
+    local padding2=$((TERM_COLS - ${#hostname_text} - ${#refresh_text} - 4))
+    [ $padding2 -lt 0 ] && padding2=0
+    printf "%*s" $padding2 " "
     tput_color white
-    printf "Refresh: ${DASHBOARD_REFRESH}s"
+    printf "%s" "$refresh_text"
     tput_reset; tput_color cyan
     printf " │\n"
     printf "├"; draw_box_line "─"; printf "┤\n"
@@ -220,7 +287,7 @@ draw_devices() {
             local stats
             stats="$(timeout 2 ssh -o ConnectTimeout=1 -o StrictHostKeyChecking=no "$user@$ip" \
                 "top -bn1 | grep 'Cpu' | head -1 | awk '{print int(\$2)}'; \
-                 free -m | awk '/^Mem:/ {printf \"%.1f/%.1fG\", \$3/1024, \$2/1024}'; \
+                 free -m | awk '/^Mem:/ {printf \"%.1f/%.1fG\\n\", \$3/1024, \$2/1024}'; \
                  tmux ls 2>/dev/null | grep -c ralph || echo 0" 2>/dev/null)"
             echo "$stats" > "$tmpdir/$name.stats"
         ) &
@@ -229,18 +296,21 @@ draw_devices() {
     # Wait for all SSH calls (max 2.5s)
     sleep 2.5
 
-    # Display results
+    # Display results with responsive layout
     echo "$devices_array" | jq -r '.[] | "\(.name)|\(.ip)|\(.user)"' 2>/dev/null | \
     while IFS='|' read -r name ip user; do
-        local status="offline" cpu="?" ram="?/?GB" agents="0"
+        local status="offline" cpu_val="?" ram="?/?GB" agents="0"
 
         if [ -f "$tmpdir/$name.stats" ]; then
             local stats=$(cat "$tmpdir/$name.stats")
             if [ -n "$stats" ]; then
                 status="online"
-                cpu="$(echo "$stats" | sed -n '1p')%"
+                cpu_val="$(echo "$stats" | sed -n '1p')"
                 ram="$(echo "$stats" | sed -n '2p')"
                 agents="$(echo "$stats" | sed -n '3p')"
+
+                # Store CPU for sparkline
+                store_metric "$name" "CPU" "$cpu_val"
             fi
         fi
 
@@ -248,16 +318,53 @@ draw_devices() {
         tput_bold
         printf "%-10s" "$name"
         tput_reset
-        printf " %-15s " "$ip"
 
-        if [ "$status" = "online" ]; then
-            tput_color green; printf "● ONLINE "
+        if is_narrow; then
+            # Narrow: compact view
+            printf " "
+            if [ "$status" = "online" ]; then
+                tput_color green; printf "●"
+            else
+                tput_color red; printf "○"
+            fi
+            tput_reset
+            printf " CPU:%s%%" "$cpu_val"
+
+        elif is_wide; then
+            # Wide: full view with sparkline
+            printf " %-15s " "$ip"
+
+            if [ "$status" = "online" ]; then
+                tput_color green; printf "● ONLINE "
+            else
+                tput_color red; printf "○ OFFLINE"
+            fi
+            tput_reset
+
+            printf "  CPU: %-3s%% RAM: %-10s %s AGT  " "$cpu_val" "$ram" "$agents"
+
+            # Sparkline
+            if [ "$status" = "online" ] && [ "$cpu_val" != "?" ]; then
+                local spark=$(get_sparkline "$name" "CPU")
+                tput_color cyan
+                printf "%s" "$spark"
+                tput_reset
+            fi
         else
-            tput_color red; printf "○ OFFLINE"
-        fi
-        tput_reset
+            # Medium: moderate detail
+            printf " %-15s " "$ip"
 
-        printf "  CPU: %-6s RAM: %-10s %s AGT\n" "$cpu" "$ram" "$agents"
+            if [ "$status" = "online" ]; then
+                tput_color green; printf "●"
+            else
+                tput_color red; printf "○"
+            fi
+            tput_reset
+
+            printf " CPU: %-3s%% RAM: %-10s" "$cpu_val" "$ram"
+        fi
+
+        printf "\n"
     done
 
     # Cleanup
