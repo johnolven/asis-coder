@@ -52,7 +52,14 @@ swarm_start_agent() {
         return 0
     fi
 
-    # Construir prompt inicial para Claude
+    # Determinar tool del agente (default: claude)
+    local tool
+    tool="$(jq -r --arg a "$agent" '.agents[] | select(.name==$a) | .tool // "claude"' "$pfile")"
+    if [ "$tool" = "null" ] || [ -z "$tool" ]; then
+        tool="claude"
+    fi
+
+    # Construir prompt inicial
     local prompt
     if [ -n "$task" ] && [ "$task" != "null" ] && [ "$task" != "" ]; then
         prompt="$task"
@@ -60,14 +67,20 @@ swarm_start_agent() {
         prompt="Estás trabajando en el branch $branch del proyecto $project. Espera instrucciones."
     fi
 
-    # Escape para pasar por shell remoto
-    local escaped_prompt
-    escaped_prompt="$(printf '%q' "$prompt")"
+    # Construir comando usando cli_orchestrator si está disponible
+    local launch_cmd
+    if type cli_build_cmd &>/dev/null; then
+        launch_cmd="$(cli_build_cmd "$tool" "$prompt" "--dangerously-skip-permissions")"
+    else
+        local escaped_prompt
+        escaped_prompt="$(printf '%q' "$prompt")"
+        launch_cmd="claude --dangerously-skip-permissions $escaped_prompt"
+    fi
 
     swarm_wt_run_on_device "$device" bash -lc "
         set -e
         cd \"$wt\"
-        tmux new-session -d -s \"$session\" -c \"$wt\" \"claude --dangerously-skip-permissions $escaped_prompt; bash\"
+        tmux new-session -d -s \"$session\" -c \"$wt\" \"$launch_cmd; bash\"
     "
     if [ $? -eq 0 ]; then
         swarm_ok "Agente '$agent' corriendo en '$device' (tmux: $session)"

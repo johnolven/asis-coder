@@ -164,7 +164,10 @@ swarm_ralph_start() {
 
     swarm_ssh_cmd "$device_name" "tmux kill-session -t $session_name 2>/dev/null || true"
 
-    local ralph_cmd="cd $project_dir && ./ralph.sh --tool claude $iterations 2>&1 | tee ralph.log"
+    local tool
+    tool="$(echo "$agent_info" | jq -r '.tool // "claude"')"
+    [ "$tool" = "null" ] || [ -z "$tool" ] && tool="claude"
+    local ralph_cmd="cd $project_dir && ./ralph.sh --tool $tool $iterations 2>&1 | tee ralph.log"
     swarm_ssh_cmd "$device_name" "tmux new-session -d -s $session_name \"$ralph_cmd\"" || {
         swarm_error "Falló inicio de Ralph"
         return 1

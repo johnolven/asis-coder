@@ -48,6 +48,13 @@ ${SWARM_C_BOLD}EJECUCIÓN${SWARM_C_RESET}  (en el parent)
   coder swarm attach <project> <agent>
   coder swarm run <project> <agent> "<cmd>"
 
+${SWARM_C_BOLD}AI CLI TOOLS${SWARM_C_RESET}
+  coder swarm tool list                   CLIs disponibles y estado
+  coder swarm tool install <name>         Instalar un CLI (claude,gemini,codex,aider)
+  coder swarm tool test [name|all]        Health check
+  coder swarm tool select <task-type>     Ver routing para un tipo de tarea
+  coder swarm tool set <proj> <agent> <t> Asignar tool a un agente
+
 ${SWARM_C_BOLD}COMUNICACIÓN${SWARM_C_RESET}
   coder swarm msg ...         Mensajes entre agentes
 
@@ -149,6 +156,7 @@ swarm_router() {
         msg)      swarm_comm_cmd "$@" ;;
         ralph)    swarm_ralph_cmd "$@" ;;
         prd)      prd_generate_cmd "$@" ;;
+        tool)     swarm_tool_handler "$@" ;;
         dashboard) swarm_dashboard_cmd "$@" ;;
 
         ""|help|-h|--help) swarm_help ;;
