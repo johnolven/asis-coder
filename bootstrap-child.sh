@@ -78,12 +78,18 @@ fi
 echo "  node: $(node --version)"
 echo "  npm:  $(npm --version)"
 
-echo "[3/6] Instalando Claude CLI si no existe..."
-if ! command -v claude >/dev/null; then
+echo "[3/6] Instalando CLI de IA si no hay ninguno..."
+# El device solo necesita UN CLI para servir como agente; claude es el default
+if ! command -v claude >/dev/null && ! command -v gemini >/dev/null \
+   && ! command -v codex >/dev/null && ! command -v aider >/dev/null; then
     $SUDO npm install -g @anthropic-ai/claude-code 2>&1 | tail -3 || \
         npm install -g @anthropic-ai/claude-code 2>&1 | tail -3
 fi
-echo "  claude: $(command -v claude || echo 'NO INSTALADO - revisar permisos npm')"
+_found=""
+for _t in claude gemini codex aider; do
+    command -v "$_t" >/dev/null && _found="$_found $_t"
+done
+echo "  CLIs de IA:${_found:- NINGUNO - revisar permisos npm}"
 
 echo "[4/6] Descargando asis-coder..."
 INSTALL_DIR="$HOME/.local/asis-coder"

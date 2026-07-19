@@ -351,8 +351,10 @@ _wiz_child() {
     for cmd in jq tmux redis-cli git; do
         command -v "$cmd" >/dev/null 2>&1 || missing+=("$cmd")
     done
-    if ! command -v claude >/dev/null 2>&1; then
-        missing+=("claude")
+    # Basta con UN CLI de IA para que el device pueda correr agentes
+    if ! command -v claude >/dev/null 2>&1 && ! command -v gemini >/dev/null 2>&1 \
+       && ! command -v codex >/dev/null 2>&1 && ! command -v aider >/dev/null 2>&1; then
+        missing+=("un CLI de IA (claude/gemini/codex/aider)")
     fi
     if [ ${#missing[@]} -gt 0 ]; then
         swarm_warn "Faltan: ${missing[*]}"
@@ -364,7 +366,8 @@ _wiz_child() {
                 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
                 sudo apt-get install -y -qq nodejs
             fi
-            if ! command -v claude >/dev/null; then
+            if ! command -v claude >/dev/null && ! command -v gemini >/dev/null \
+               && ! command -v codex >/dev/null && ! command -v aider >/dev/null; then
                 sudo npm install -g @anthropic-ai/claude-code || \
                     npm install -g @anthropic-ai/claude-code
             fi

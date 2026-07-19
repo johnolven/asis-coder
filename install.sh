@@ -105,11 +105,16 @@ install_swarm_extras() {
         print_success "Redis instalado"
     fi
 
-    if ! command -v claude >/dev/null 2>&1; then
-        print_warning "claude CLI no encontrado (necesario para los agentes)"
-        print_status "Instala con: npm install -g @anthropic-ai/claude-code"
+    # Los agentes pueden usar cualquiera de los CLIs soportados, no solo claude
+    local found=()
+    for t in claude gemini codex aider; do
+        command -v "$t" >/dev/null 2>&1 && found+=("$t")
+    done
+    if [ ${#found[@]} -eq 0 ]; then
+        print_warning "Ningún CLI de IA encontrado (los agentes necesitan al menos uno)"
+        print_status "Instala alguno con: coder swarm tool install <claude|gemini|codex|aider>"
     else
-        print_success "Claude CLI instalado"
+        print_success "CLIs de IA disponibles: ${found[*]}"
     fi
 }
 
