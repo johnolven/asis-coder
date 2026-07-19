@@ -23,11 +23,25 @@ declare -A CLI_VERSION_FLAGS=(
   [aider]="--version"
 )
 
+# El prompt va SIEMPRE entre comillas simples: cli_build_cmd escapa para ese
+# contexto ('  ->  '\''). Con comillas dobles un prompt con " o $ rompía el
+# comando o inyectaba shell.
 declare -A CLI_LAUNCH_TEMPLATES=(
-  [claude]='claude -p "{PROMPT}" --allowedTools "Bash(git*),Bash(npm*),Bash(node*),Read,Write,Edit" {OPTIONS}'
-  [gemini]='echo "{PROMPT}" | gemini'
-  [codex]='codex --full-auto "{PROMPT}"'
-  [aider]='aider --yes-always --message "{PROMPT}" {FILES}'
+  [claude]='claude -p '"'"'{PROMPT}'"'"' --allowedTools "Bash(git*),Bash(npm*),Bash(node*),Read,Write,Edit" {OPTIONS}'
+  [gemini]='gemini {OPTIONS} -p '"'"'{PROMPT}'"'"''
+  [codex]='codex exec {OPTIONS} '"'"'{PROMPT}'"'"''
+  [aider]='aider --yes-always --message '"'"'{PROMPT}'"'"' {OPTIONS} {FILES}'
+)
+
+# Flag de autonomía por tool. Antes se pasaba --dangerously-skip-permissions
+# (flag exclusivo de claude) a cualquier tool.
+# codex: 'exec' ya es headless; -s workspace-write le deja escribir en el
+# worktree sin desactivar el sandbox. Sube a danger-full-access solo si hace falta.
+declare -A CLI_AUTO_FLAGS=(
+  [claude]="--dangerously-skip-permissions"
+  [gemini]="-y"
+  [codex]="-s workspace-write --skip-git-repo-check"
+  [aider]=""
 )
 
 declare -A CLI_CAPABILITIES=(
@@ -152,6 +166,91 @@ cli_select() {
 
   echo ""
   return 1
+}
+
+# Infiere el task-type de CLI_ROUTING a partir del texto de la tarea.
+# Heurística por keywords (es/en); si nada matchea → default.
+cli_infer_task_type() {
+  local task_lc
+  task_lc="$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')"
+
+  case "$task_lc" in
+    *securit*|*segurid*|*audit*|*vulnerab*)        echo "security-audit" ;;
+    *test*|*prueba*|*spec*)                        echo "test-generation" ;;
+    *document*|*readme*|*docs*)                    echo "documentation" ;;
+    *refactor*|*reestructur*|*migra*)              echo "complex-refactor" ;;
+    *investig*|*research*|*explora*)               echo "research" ;;
+    *analiz*|*analy*|*revisa*|*review*)            echo "large-analysis" ;;
+    *arregla*|*fix*|*bug*|*corrige*|*hotfix*)      echo "quick-fix" ;;
+    *implementa*|*feature*|*crea*|*nueva*|*new*)   echo "new-feature" ;;
+    *)                                             echo "default" ;;
+  esac
+}
+
+# ─── Interactive Picker ───────────────────────────────────────
+
+# Menú interactivo: lista tools instalados y deja elegir (o 'auto').
+# Escribe .tool en el project JSON; 'auto' lo elimina para que el
+# lanzamiento use cli_select según la tarea.
+cli_choose() {
+  local project="$1" agent="$2"
+  local project_file="${SWARM_DIR:-$HOME/.config/coder-cli/swarm}/projects/${project}.json"
+
+  if [ -z "$project" ] || [ -z "$agent" ]; then
+    echo "  Uso: coder swarm tool choose <project> <agent>"
+    return 1
+  fi
+  if [ ! -f "$project_file" ]; then
+    echo "  ❌ Proyecto no encontrado: $project"
+    return 1
+  fi
+  if ! jq -e --arg a "$agent" '.agents[] | select(.name==$a)' "$project_file" >/dev/null 2>&1; then
+    echo "  ❌ Agente '$agent' no existe en '$project'"
+    return 1
+  fi
+
+  local current
+  current="$(jq -r --arg a "$agent" '.agents[] | select(.name==$a) | .tool // "auto"' "$project_file")"
+
+  echo ""
+  echo "  🔧 Tool para el agente '$agent' (actual: $current)"
+  echo "  ──────────────────────────────────────────────"
+  echo ""
+  printf "  %s) %-8s %s\n" "0" "auto" "elegir según el tipo de tarea (routing automático)"
+
+  # Solo tools instalados son elegibles
+  local installed=() i=1
+  for t in claude gemini codex aider; do
+    if command -v "${CLI_BINARIES[$t]}" >/dev/null 2>&1; then
+      installed+=("$t")
+      printf "  %s) %-8s %s\n" "$i" "$t" "${CLI_CAPABILITIES[$t]}"
+      ((i++))
+    else
+      printf "     %-8s (no instalado — coder swarm tool install %s)\n" "$t" "$t"
+    fi
+  done
+  echo ""
+
+  local choice
+  read -r -p "  Selección [0-$((i-1))]: " choice
+
+  local tmp
+  tmp="$(mktemp)"
+  if [ "$choice" = "0" ]; then
+    jq --arg a "$agent" '(.agents[] | select(.name==$a)) |= del(.tool)' \
+      "$project_file" > "$tmp" && mv "$tmp" "$project_file"
+    echo "  ✅ $agent → auto (routing por tipo de tarea)"
+  elif [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 1 ] && [ "$choice" -lt "$i" ]; then
+    local tool="${installed[$((choice-1))]}"
+    jq --arg a "$agent" --arg t "$tool" \
+      '(.agents[] | select(.name==$a)).tool = $t' \
+      "$project_file" > "$tmp" && mv "$tmp" "$project_file"
+    echo "  ✅ $agent → $tool"
+  else
+    rm -f "$tmp"
+    echo "  ❌ Selección inválida"
+    return 1
+  fi
 }
 
 # ─── Build Command ────────────────────────────────────────────
@@ -309,6 +408,9 @@ swarm_tool_handler() {
         echo "  ❌ No hay tool disponible para '$task_type'"
       fi
       ;;
+    choose|pick)
+      cli_choose "$1" "$2"
+      ;;
     set)
       local project="$1"
       local agent="$2"
@@ -326,10 +428,18 @@ swarm_tool_handler() {
       if command -v jq &>/dev/null; then
         local tmp
         tmp=$(mktemp)
-        jq --arg agent "$agent" --arg tool "$tool" \
-          '(.agents[] | select(.name == $agent)).tool = $tool' \
-          "$project_file" > "$tmp" && mv "$tmp" "$project_file"
-        echo "  ✅ $agent → $tool (proyecto: $project)"
+        if [ "$tool" = "auto" ]; then
+          # auto = sin tool fijo; el lanzamiento usa cli_select por tarea
+          jq --arg agent "$agent" \
+            '(.agents[] | select(.name == $agent)) |= del(.tool)' \
+            "$project_file" > "$tmp" && mv "$tmp" "$project_file"
+          echo "  ✅ $agent → auto (routing por tipo de tarea)"
+        else
+          jq --arg agent "$agent" --arg tool "$tool" \
+            '(.agents[] | select(.name == $agent)).tool = $tool' \
+            "$project_file" > "$tmp" && mv "$tmp" "$project_file"
+          echo "  ✅ $agent → $tool (proyecto: $project)"
+        fi
       else
         echo "  ⚠️  Se requiere jq para actualizar el config"
         return 1
@@ -349,7 +459,8 @@ swarm_tool_handler() {
       echo "    install <tool>                Instalar un tool"
       echo "    test [tool|all]               Verificar salud de tools"
       echo "    select <task-type>            Ver qué tool se usaría"
-      echo "    set <project> <agent> <tool>  Asignar tool a un agente"
+      echo "    choose <project> <agent>      Menú interactivo para elegir tool"
+      echo "    set <project> <agent> <tool>  Asignar tool a un agente (o 'auto')"
       echo "    registry                      Guardar registry a disco"
       echo ""
       echo "  Task types: complex-refactor, large-analysis, quick-fix,"

@@ -1,11 +1,17 @@
 
-## Claude Code Skills: PRD, Ralph & Swarm
+## Claude Code Skills — todo se usa desde `/`
 
-Asis-coder includes **3 Claude Code skills** that enable autonomous feature development across your Raspberry Pi swarm:
+Asis-coder includes **5 Claude Code skills**. No hay que memorizar comandos: teclea `/` en Claude Code y aparecen listadas. Si no sabes por dónde empezar, usa **`/coder`**.
 
-1. **`/prd`** - Generate Product Requirements Documents interactively
-2. **`/ralph`** - Convert PRDs to Ralph JSON format for autonomous execution
-3. **`/swarm`** - Orchestrate distributed agents across Raspberry Pis
+| Skill | Qué hace |
+|---|---|
+| **`/coder`** | 🏠 Menú principal — lista todo lo que se puede hacer y te guía |
+| **`/tools`** | Elegir qué CLI de IA usa cada agente (claude/gemini/codex/aider), instalarlos, o dejarlo en `auto` (routing por tipo de tarea) |
+| **`/swarm`** | Orquestar agentes distribuidos en las Raspberry Pi |
+| **`/prd`** | Generar Product Requirements Documents interactivamente |
+| **`/ralph`** | Convertir PRDs a formato Ralph JSON para ejecución autónoma |
+
+**Selección de tool por agente:** cada agente del swarm puede usar un CLI fijo (`/tools` → elegir) o modo `auto`, donde el swarm enruta según la tarea: quick-fixes → codex/aider, docs y research → gemini, refactors/seguridad/tests → claude.
 
 ### Automatic Installation
 

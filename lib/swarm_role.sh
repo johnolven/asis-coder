@@ -150,6 +150,15 @@ swarm_role_init_child() {
     has_claude="$(command -v claude >/dev/null && echo true || echo false)"
     has_tmux="$(command -v tmux   >/dev/null && echo true || echo false)"
     has_node="$(command -v node   >/dev/null && echo true || echo false)"
+    # Lista de CLIs de coding disponibles (no solo claude)
+    local detected_tools=()
+    for _t in claude gemini codex aider; do
+        command -v "$_t" >/dev/null 2>&1 && detected_tools+=("$_t")
+    done
+    local tools_json="[]"
+    if [ ${#detected_tools[@]} -gt 0 ]; then
+        tools_json="$(printf '%s\n' "${detected_tools[@]}" | jq -R . | jq -s -c .)"
+    fi
     local kernel arch
     kernel="$(uname -s)"
     arch="$(uname -m)"
@@ -165,6 +174,7 @@ swarm_role_init_child() {
           --argjson has_claude "$has_claude" \
           --argjson has_tmux "$has_tmux" \
           --argjson has_node "$has_node" \
+          --argjson tools "$tools_json" \
         '{
             role: "child",
             name: $name,
@@ -175,6 +185,7 @@ swarm_role_init_child() {
             token: $token,
             capabilities: {
                 claude: $has_claude,
+                tools:  $tools,
                 tmux:   $has_tmux,
                 node:   $has_node,
                 kernel: $kernel,

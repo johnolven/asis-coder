@@ -1,6 +1,7 @@
 ---
 name: swarm
-description: Orchestrate distributed Claude agents across Raspberry Pi devices in a parent/child swarm architecture. Supports both interactive Claude sessions and autonomous Ralph loops.
+description: "Orquesta agentes IA distribuidos (claude/gemini/codex/aider) en los devices del swarm (Raspberry Pi, parent/child). Sesiones interactivas o loops autónomos Ralph. Triggers: lanzar agente, swarm status, agentes distribuidos."
+user-invocable: true
 ---
 
 # Swarm Orchestration Skill

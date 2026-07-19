@@ -52,12 +52,10 @@ swarm_start_agent() {
         return 0
     fi
 
-    # Determinar tool del agente (default: claude)
+    # Determinar tool del agente: fijado con 'coder swarm tool set/choose',
+    # o automático según el tipo de tarea si no hay uno (o es "auto")
     local tool
-    tool="$(jq -r --arg a "$agent" '.agents[] | select(.name==$a) | .tool // "claude"' "$pfile")"
-    if [ "$tool" = "null" ] || [ -z "$tool" ]; then
-        tool="claude"
-    fi
+    tool="$(jq -r --arg a "$agent" '.agents[] | select(.name==$a) | .tool // "auto"' "$pfile")"
 
     # Construir prompt inicial
     local prompt
@@ -67,10 +65,23 @@ swarm_start_agent() {
         prompt="Estás trabajando en el branch $branch del proyecto $project. Espera instrucciones."
     fi
 
+    if [ "$tool" = "auto" ] || [ "$tool" = "null" ] || [ -z "$tool" ]; then
+        if type cli_select &>/dev/null; then
+            local task_type
+            task_type="$(cli_infer_task_type "$prompt")"
+            tool="$(cli_select "$task_type")"
+            swarm_info "Tool automático: '$tool' (tarea tipo '$task_type')"
+        fi
+        # Sin orquestador o sin tools detectados: default histórico
+        [ -z "$tool" ] && tool="claude"
+    fi
+
     # Construir comando usando cli_orchestrator si está disponible
     local launch_cmd
     if type cli_build_cmd &>/dev/null; then
-        launch_cmd="$(cli_build_cmd "$tool" "$prompt" "--dangerously-skip-permissions")"
+        # Flag de autonomía propio de cada tool (no todos aceptan el de claude)
+        local auto_flag="${CLI_AUTO_FLAGS[$tool]:-}"
+        launch_cmd="$(cli_build_cmd "$tool" "$prompt" "$auto_flag")"
     else
         local escaped_prompt
         escaped_prompt="$(printf '%q' "$prompt")"

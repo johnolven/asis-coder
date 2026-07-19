@@ -97,18 +97,24 @@ swarm_daemon_handle_cmd() {
             2>&1)" || status="err"
             ;;
         claude_start)
-            local session wt task
+            local session wt task tool
             session="$(echo "$payload" | jq -r '.session')"
             wt="$(echo "$payload"      | jq -r '.worktree')"
             task="$(echo "$payload"    | jq -r '.task')"
+            tool="$(echo "$payload"    | jq -r '.tool // "claude"')"
+            [ "$tool" = "null" ] && tool="claude"
             if tmux has-session -t "$session" 2>/dev/null; then
                 output="session already running: $session"
             else
-                local esc
-                esc="$(printf '%q' "$task")"
+                local launch_cmd
+                if type cli_build_cmd &>/dev/null; then
+                    launch_cmd="$(cli_build_cmd "$tool" "$task" "${CLI_AUTO_FLAGS[$tool]:-}")"
+                else
+                    launch_cmd="claude --dangerously-skip-permissions $(printf '%q' "$task")"
+                fi
                 tmux new-session -d -s "$session" -c "$wt" \
-                    "claude --dangerously-skip-permissions $esc; bash" 2>&1
-                output="started session $session in $wt"
+                    "$launch_cmd; bash" 2>&1
+                output="started session $session in $wt (tool: $tool)"
             fi
             ;;
         claude_stop)
